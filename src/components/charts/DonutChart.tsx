@@ -28,8 +28,9 @@ export function DonutChart({
 }: DonutChartProps) {
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold">{title}</h3>
-      <ResponsiveContainer width="100%" height={400}>
+      {title && <h3 className="text-lg font-semibold">{title}</h3>}
+      <div className="h-[300px] sm:h-[400px]">
+        <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
             data={data}
@@ -50,7 +51,8 @@ export function DonutChart({
           <Tooltip />
           <Legend />
         </PieChart>
-      </ResponsiveContainer>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }

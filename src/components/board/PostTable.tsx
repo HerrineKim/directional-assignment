@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 import { ColumnVisibility, type ColumnConfig } from "./ColumnVisibility";
 import type { Post } from "@/lib/types/post";
 
@@ -150,13 +151,58 @@ export function PostTable({
     }
   };
 
+  // Mobile Card View
+  const MobileCardView = ({ post }: { post: Post }) => (
+    <div className="border rounded-lg p-4 space-y-3">
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex-1 min-w-0">
+          <h3 className="font-semibold text-lg truncate">{post.title}</h3>
+          <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{post.body}</p>
+        </div>
+        <div className="flex gap-1 shrink-0">
+          <Button variant="ghost" size="icon" onClick={() => onEdit(post)}>
+            <Edit className="h-4 w-4" />
+          </Button>
+          <Button variant="ghost" size="icon" onClick={() => onDelete(post.id)}>
+            <Trash2 className="h-4 w-4 text-destructive" />
+          </Button>
+        </div>
+      </div>
+      <div className="flex flex-wrap items-center gap-2 text-sm">
+        <Badge variant="outline">{getCategoryLabel(post.category)}</Badge>
+        {post.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {post.tags.map((tag) => (
+              <Badge key={tag} variant="secondary" className="text-xs">
+                {tag}
+              </Badge>
+            ))}
+          </div>
+        )}
+        <span className="text-muted-foreground ml-auto">
+          {formatDate(post.createdAt)}
+        </span>
+      </div>
+    </div>
+  );
+
   return (
     <div className="space-y-4">
       <div className="flex justify-end">
         <ColumnVisibility columns={columns} onColumnsChange={setColumns} />
       </div>
 
-      <div className="rounded-md border overflow-x-auto">
+      {/* Mobile Card View */}
+      <div className="md:hidden space-y-4">
+        {posts.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">게시글이 없습니다.</div>
+        ) : (
+          posts.map((post) => <MobileCardView key={post.id} post={post} />)
+        )}
+      </div>
+
+      {/* Desktop Table View */}
+      <div className="hidden md:block rounded-md border overflow-x-auto">
         <Table ref={tableRef}>
           <TableHeader>
             <TableRow>

@@ -26,8 +26,9 @@ export function StackedBarChart<T extends Record<string, string | number>>({
 }: StackedBarChartProps<T>) {
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold">{title}</h3>
-      <ResponsiveContainer width="100%" height={400}>
+      {title && <h3 className="text-lg font-semibold">{title}</h3>}
+      <div className="h-[300px] sm:h-[400px]">
+        <ResponsiveContainer width="100%" height="100%">
         <RechartsBarChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey={xKey} />
@@ -38,7 +39,8 @@ export function StackedBarChart<T extends Record<string, string | number>>({
             <Bar key={key} dataKey={key} stackId="a" fill={color} name={name} />
           ))}
         </RechartsBarChart>
-      </ResponsiveContainer>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }

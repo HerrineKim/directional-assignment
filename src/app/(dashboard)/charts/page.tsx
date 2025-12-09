@@ -190,8 +190,8 @@ export default function ChartsPage() {
   }
 
   return (
-    <div className="space-y-8">
-      <h1 className="text-3xl font-bold">데이터 시각화</h1>
+    <div className="space-y-6 sm:space-y-8">
+      <h1 className="text-2xl sm:text-3xl font-bold">데이터 시각화</h1>
 
       {/* Coffee Brands */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

@@ -52,7 +52,7 @@ export function PostFilters({
 
   return (
     <div className="space-y-4">
-      <form onSubmit={handleSearchSubmit} className="flex gap-2">
+      <form onSubmit={handleSearchSubmit} className="flex flex-col sm:flex-row gap-2">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
@@ -63,24 +63,27 @@ export function PostFilters({
             className="pl-9"
           />
         </div>
-        <Button type="submit">검색</Button>
-        {localSearch && (
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => {
-              setLocalSearch("");
-              onSearchChange("");
-            }}
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        )}
+        <div className="flex gap-2">
+          <Button type="submit" className="flex-1 sm:flex-none">검색</Button>
+          {localSearch && (
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              onClick={() => {
+                setLocalSearch("");
+                onSearchChange("");
+              }}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
       </form>
 
       <div className="flex flex-wrap gap-2">
         <Select value={category} onValueChange={(value) => onCategoryChange(value as Category | "ALL")}>
-          <SelectTrigger className="w-[140px]">
+          <SelectTrigger className="w-full sm:w-[140px]">
             <SelectValue placeholder="카테고리" />
           </SelectTrigger>
           <SelectContent>
@@ -96,7 +99,7 @@ export function PostFilters({
         </Select>
 
         <Select value={sort} onValueChange={(value) => onSortChange(value as SortField)}>
-          <SelectTrigger className="w-[140px]">
+          <SelectTrigger className="w-full sm:w-[140px]">
             <SelectValue placeholder="정렬 기준" />
           </SelectTrigger>
           <SelectContent>
@@ -109,7 +112,7 @@ export function PostFilters({
         </Select>
 
         <Select value={order} onValueChange={(value) => onOrderChange(value as SortOrder)}>
-          <SelectTrigger className="w-[120px]">
+          <SelectTrigger className="w-full sm:w-[120px]">
             <SelectValue placeholder="정렬 방향" />
           </SelectTrigger>
           <SelectContent>
@@ -122,7 +125,7 @@ export function PostFilters({
         </Select>
 
         {hasActiveFilters && (
-          <Button variant="outline" onClick={onClear}>
+          <Button variant="outline" onClick={onClear} className="w-full sm:w-auto">
             필터 초기화
           </Button>
         )}

@@ -58,7 +58,7 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md mx-auto">
         <CardHeader>
           <CardTitle>로그인</CardTitle>
           <CardDescription>이메일과 비밀번호를 입력해주세요</CardDescription>

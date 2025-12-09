@@ -31,6 +31,7 @@ export default function BoardPage() {
 
   useEffect(() => {
     refresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sort, order, category, debouncedSearch]);
 
   const handleCreate = async (data: PostFormData) => {
@@ -75,13 +76,16 @@ export default function BoardPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">게시판</h1>
-        <Button onClick={() => {
-          setEditingPost(null);
-          setIsFormOpen(true);
-        }}>
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <h1 className="text-2xl sm:text-3xl font-bold">게시판</h1>
+        <Button
+          onClick={() => {
+            setEditingPost(null);
+            setIsFormOpen(true);
+          }}
+          className="w-full sm:w-auto"
+        >
           게시글 작성
         </Button>
       </div>

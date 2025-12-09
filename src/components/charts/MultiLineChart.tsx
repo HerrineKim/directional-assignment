@@ -87,8 +87,9 @@ export function MultiLineChart({
 }: MultiLineChartProps) {
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold">{title}</h3>
-      <ResponsiveContainer width="100%" height={500}>
+      {title && <h3 className="text-lg font-semibold">{title}</h3>}
+      <div className="h-[350px] sm:h-[500px]">
+        <ResponsiveContainer width="100%" height="100%">
         <RechartsLineChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis
@@ -152,7 +153,8 @@ export function MultiLineChart({
             </>
           ))}
         </RechartsLineChart>
-      </ResponsiveContainer>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }

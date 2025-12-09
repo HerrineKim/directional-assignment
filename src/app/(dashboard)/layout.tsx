@@ -1,10 +1,19 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Menu, X } from "lucide-react";
 import { useAuthStore } from "@/lib/stores/authStore";
 import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 export default function DashboardLayout({
   children,
@@ -13,6 +22,7 @@ export default function DashboardLayout({
 }) {
   const router = useRouter();
   const { isAuthenticated, logout, user } = useAuthStore();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -24,27 +34,66 @@ export default function DashboardLayout({
     return null;
   }
 
+  const navLinks = (
+    <>
+      <Link
+        href="/board"
+        className="text-lg font-semibold hover:text-primary transition-colors"
+        onClick={() => setIsMobileMenuOpen(false)}
+      >
+        게시판
+      </Link>
+      <Link
+        href="/charts"
+        className="text-lg font-semibold hover:text-primary transition-colors"
+        onClick={() => setIsMobileMenuOpen(false)}
+      >
+        데이터 시각화
+      </Link>
+    </>
+  );
+
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b">
+      <header className="border-b sticky top-0 z-50 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <nav className="flex items-center gap-6">
-            <Link href="/board" className="text-lg font-semibold">
-              게시판
-            </Link>
-            <Link href="/charts" className="text-lg font-semibold">
-              데이터 시각화
-            </Link>
-          </nav>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">{user?.email}</span>
-            <Button variant="outline" onClick={logout}>
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center gap-6">{navLinks}</nav>
+
+          {/* Mobile Menu Button */}
+          <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+            <SheetTrigger asChild className="md:hidden">
+              <Button variant="ghost" size="icon">
+                <Menu className="h-5 w-5" />
+                <span className="sr-only">메뉴 열기</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-[300px] sm:w-[400px]">
+              <SheetHeader>
+                <SheetTitle>메뉴</SheetTitle>
+                <SheetDescription>페이지를 선택하세요</SheetDescription>
+              </SheetHeader>
+              <nav className="flex flex-col gap-4 mt-6">{navLinks}</nav>
+            </SheetContent>
+          </Sheet>
+
+          {/* User Info & Logout */}
+          <div className="flex items-center gap-2 sm:gap-4">
+            <span className="hidden sm:inline-block text-sm text-muted-foreground truncate max-w-[150px]">
+              {user?.email}
+            </span>
+            <Button
+              variant="outline"
+              onClick={logout}
+              size="sm"
+              className="text-xs sm:text-sm"
+            >
               로그아웃
             </Button>
           </div>
         </div>
       </header>
-      <main className="container mx-auto px-4 py-8">{children}</main>
+      <main className="container mx-auto px-4 py-4 sm:py-8">{children}</main>
     </div>
   );
 }
