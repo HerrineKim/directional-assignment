@@ -1,18 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import validator from "email-validator";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuthStore } from "@/lib/stores/authStore";
-import { authApi } from "@/lib/api/auth";
 
 const loginSchema = z.object({
-  email: z.string().email("올바른 이메일을 입력해주세요"),
+  email: z
+    .string()
+    .min(1, "이메일을 입력해주세요")
+    .refine((email) => validator.validate(email), {
+      message: "올바른 이메일을 입력해주세요",
+    }),
   password: z.string().min(1, "비밀번호를 입력해주세요"),
 });
 
@@ -20,9 +25,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const router = useRouter();
-  const login = useAuthStore((state) => state.login);
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const { login, isLoading, error, clearError, isAuthenticated } = useAuthStore();
 
   const {
     register,
@@ -32,19 +35,24 @@ export default function LoginPage() {
     resolver: zodResolver(loginSchema),
   });
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/board");
+    }
+  }, [isAuthenticated, router]);
+
+  useEffect(() => {
+    return () => {
+      clearError();
+    };
+  }, [clearError]);
+
   const onSubmit = async (data: LoginFormData) => {
     try {
-      setError(null);
-      setIsLoading(true);
-      const response = await authApi.login(data);
-      login(response);
+      await login(data);
       router.push("/board");
-    } catch (err: any) {
-      setError(
-        err.response?.data?.message || "로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요."
-      );
-    } finally {
-      setIsLoading(false);
+    } catch {
+      // Error is already handled in the store
     }
   };
 

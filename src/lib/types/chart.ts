@@ -15,7 +15,7 @@ export interface PopularSnackBrandItem {
 export type PopularSnackBrandsResponse = PopularSnackBrandItem[];
 
 // Weekly Mood Trend
-export interface WeeklyMoodItem {
+export interface WeeklyMoodItem extends Record<string, string | number> {
   week: string;
   happy: number;
   tired: number;
@@ -25,7 +25,7 @@ export interface WeeklyMoodItem {
 export type WeeklyMoodTrendResponse = WeeklyMoodItem[];
 
 // Weekly Workout Trend
-export interface WeeklyWorkoutItem {
+export interface WeeklyWorkoutItem extends Record<string, string | number> {
   week: string;
   running: number;
   cycling: number;

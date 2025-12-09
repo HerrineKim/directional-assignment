@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,14 +22,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { postSchema, type PostFormData } from "@/lib/utils/validation";
+import { postSchema } from "@/lib/utils/validation";
 import { POST_CATEGORIES, MAX_TAGS, MAX_TAG_LENGTH } from "@/lib/constants";
-import type { Post } from "@/lib/types/post";
+import type { Post, Category } from "@/lib/types/post";
 
 interface PostFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (data: PostFormData) => Promise<void>;
+  onSubmit: (data: z.infer<typeof postSchema>) => Promise<void>;
   initialData?: Post | null;
 }
 
@@ -44,13 +45,13 @@ export function PostForm({ open, onOpenChange, onSubmit, initialData }: PostForm
     reset,
     formState: { errors },
     watch,
-  } = useForm<PostFormData>({
+  } = useForm({
     resolver: zodResolver(postSchema),
     defaultValues: {
       title: "",
       body: "",
-      category: "FREE",
-      tags: [],
+      category: "FREE" as Category,
+      tags: [] as string[],
     },
   });
 
@@ -110,7 +111,7 @@ export function PostForm({ open, onOpenChange, onSubmit, initialData }: PostForm
     }
   };
 
-  const onFormSubmit = async (data: PostFormData) => {
+  const onFormSubmit = async (data: z.infer<typeof postSchema>) => {
     try {
       setIsSubmitting(true);
       await onSubmit({ ...data, tags });

@@ -7,6 +7,7 @@ import {
   POST_CATEGORIES,
 } from "../constants";
 import { containsProfanity } from "./profanity";
+import type { Category, PostCreateRequest } from "../types/post";
 
 export const postSchema = z.object({
   title: z
@@ -21,8 +22,8 @@ export const postSchema = z.object({
       (val) => !containsProfanity(val),
       "본문에 금지된 단어가 포함되어 있습니다"
     ),
-  category: z.enum(POST_CATEGORIES as [string, ...string[]], {
-    required_error: "카테고리를 선택해주세요",
+  category: z.enum([...POST_CATEGORIES] as [Category, ...Category[]], {
+    message: "카테고리를 선택해주세요",
   }),
   tags: z
     .array(z.string().max(MAX_TAG_LENGTH, `태그는 ${MAX_TAG_LENGTH}자 이하여야 합니다`))

@@ -11,19 +11,19 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-interface StackedAreaChartProps {
-  data: Array<Record<string, string | number>>;
+interface StackedAreaChartProps<T = Record<string, string | number>> {
+  data: T[];
   xKey: string;
   stackKeys: Array<{ key: string; name: string; color: string }>;
   title: string;
 }
 
-export function StackedAreaChart({
+export function StackedAreaChart<T extends Record<string, string | number>>({
   data,
   xKey,
   stackKeys,
   title,
-}: StackedAreaChartProps) {
+}: StackedAreaChartProps<T>) {
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold">{title}</h3>

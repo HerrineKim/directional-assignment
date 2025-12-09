@@ -9,6 +9,7 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  Dot,
 } from "recharts";
 
 interface MultiLineChartProps {
@@ -129,7 +130,23 @@ export function MultiLineChart({
                 stroke={team.color}
                 strokeDasharray="5 5"
                 strokeWidth={2}
-                dot={{ r: 4, fill: team.color, shape: "square" }}
+                dot={(props: any) => (
+                  <Dot
+                    {...props}
+                    r={4}
+                    fill={team.color}
+                    stroke={team.color}
+                    strokeWidth={2}
+                  >
+                    <rect
+                      x={props.cx - 4}
+                      y={props.cy - 4}
+                      width={8}
+                      height={8}
+                      fill={team.color}
+                    />
+                  </Dot>
+                )}
                 name={`${team.name} - ${rightYAxisLabel}`}
               />
             </>

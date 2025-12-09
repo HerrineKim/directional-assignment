@@ -8,7 +8,7 @@ import { PostFilters } from "@/components/board/PostFilters";
 import { PostTable } from "@/components/board/PostTable";
 import { useInfinitePosts } from "@/lib/hooks/useInfinitePosts";
 import { postsApi } from "@/lib/api/posts";
-import type { Post, Category, SortField, SortOrder } from "@/lib/types/post";
+import type { Post, Category, SortField, SortOrder, PostCreateRequest, PostUpdateRequest } from "@/lib/types/post";
 import type { PostFormData } from "@/lib/utils/validation";
 
 export default function BoardPage() {
@@ -34,14 +34,14 @@ export default function BoardPage() {
   }, [sort, order, category, debouncedSearch]);
 
   const handleCreate = async (data: PostFormData) => {
-    await postsApi.create(data);
+    await postsApi.create(data as PostCreateRequest);
     setIsFormOpen(false);
     refresh();
   };
 
   const handleUpdate = async (data: PostFormData) => {
     if (!editingPost) return;
-    await postsApi.update(editingPost.id, data);
+    await postsApi.update(editingPost.id, data as PostUpdateRequest);
     setIsFormOpen(false);
     setEditingPost(null);
     refresh();

@@ -29,7 +29,7 @@ export function useInfinitePosts(options: UseInfinitePostsOptions = {}) {
           ...(cursor && (isNext ? { nextCursor: cursor } : { prevCursor: cursor })),
           ...(options.sort && { sort: options.sort }),
           ...(options.order && { order: options.order }),
-          ...(options.category && options.category !== "ALL" && { category: options.category }),
+          ...(options.category && { category: options.category }),
           ...(options.search && { search: options.search }),
         };
 
