@@ -65,8 +65,11 @@ export default function LoginPage() {
   }, [clearError]);
 
   const onSubmit = async (data: LoginFormData) => {
-    await login(data);
-    router.push("/board");
+    try {
+      await login(data);
+      router.push("/board");
+    } catch {
+    }
   };
 
   return (
