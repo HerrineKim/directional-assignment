@@ -59,7 +59,11 @@ export const useAuthStore = create<AuthState>()(
           let errorMessage = "로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.";
           
           if (err instanceof AxiosError) {
-            if (err.response?.status === 401) {
+            if (err.response?.status === 400) {
+              errorMessage =
+                err.response?.data?.message ||
+                "이메일 또는 비밀번호가 올바르지 않습니다.";
+            } else if (err.response?.status === 401) {
               errorMessage = "이메일 또는 비밀번호가 올바르지 않습니다.";
             } else if (err.response?.data?.message) {
               errorMessage = err.response.data.message;
