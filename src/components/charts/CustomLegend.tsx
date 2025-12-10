@@ -12,11 +12,19 @@ interface LegendItem {
   value?: string | number;
 }
 
+interface GroupedLegendItem {
+  team: string;
+  color: string;
+  items: Array<{ name: string; color: string }>;
+}
+
 interface CustomLegendProps {
   items: LegendItem[];
   onColorChange: (name: string, color: string) => void;
   onToggleVisibility: (name: string) => void;
   hiddenItems?: Set<string>;
+  groupedByTeam?: boolean;
+  groupedItems?: GroupedLegendItem[];
 }
 
 export function CustomLegend({
@@ -24,6 +32,8 @@ export function CustomLegend({
   onColorChange,
   onToggleVisibility,
   hiddenItems = new Set(),
+  groupedByTeam = false,
+  groupedItems = [],
 }: CustomLegendProps) {
   const [colorPickerOpen, setColorPickerOpen] = useState<string | null>(null);
   const colorPickerRef = useRef<HTMLDivElement>(null);
@@ -48,14 +58,166 @@ export function CustomLegend({
     setColorPickerOpen(null);
   };
 
+  const toggleTeamVisibility = (team: string, items: Array<{ name: string }>) => {
+    const allHidden = items.every((item) => hiddenItems.has(item.name));
+    // Toggle each item individually
+    items.forEach((item) => {
+      // If all are hidden, show them; otherwise hide them
+      if (allHidden) {
+        // Show all if all are hidden
+        if (hiddenItems.has(item.name)) {
+          onToggleVisibility(item.name);
+        }
+      } else {
+        // Hide all if any are visible
+        if (!hiddenItems.has(item.name)) {
+          onToggleVisibility(item.name);
+        }
+      }
+    });
+  };
+
+  // Render grouped legend by team
+  if (groupedByTeam && groupedItems.length > 0) {
+    return (
+      <div className="mt-4 p-3 sm:p-4 bg-muted/30 rounded-lg">
+        <div className="flex flex-wrap gap-4 justify-start sm:justify-center">
+          {groupedItems.map((group) => {
+            const groupItems = group.items;
+            const allHidden = groupItems.every((item) => hiddenItems.has(item.name));
+
+            return (
+              <div
+                key={group.team}
+                className="flex flex-col gap-2 px-3 py-2 rounded-md hover:bg-background/50 transition-colors border border-border/50"
+              >
+                {/* Team header */}
+                <div className="flex items-center gap-2">
+                  {/* Team color indicator */}
+                  <div className="relative" ref={colorPickerOpen === group.team ? colorPickerRef : null}>
+                    <div
+                      className={styles.colorIndicator}
+                      style={{ "--legend-color": group.color } as React.CSSProperties}
+                      onClick={() => setColorPickerOpen(colorPickerOpen === group.team ? null : group.team)}
+                    />
+                    {colorPickerOpen === group.team && (
+                      <div className="absolute top-6 left-0 z-50 bg-background border rounded-lg shadow-lg p-2">
+                        <input
+                          type="color"
+                          value={group.color}
+                          onChange={(e) => {
+                            // Update team color by calling handleColorChange with the first item
+                            // The MultiLineChart component will extract the team name and update all items
+                            if (groupItems.length > 0) {
+                              handleColorChange(groupItems[0].name, e);
+                            }
+                          }}
+                          className="w-8 h-8 cursor-pointer"
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Team name */}
+                  <span
+                    className={cn(
+                      "font-semibold text-sm",
+                      allHidden && "line-through opacity-50"
+                    )}
+                    style={{ "--label-color": group.color } as React.CSSProperties}
+                  >
+                    {group.team}
+                  </span>
+
+                  {/* Team-level toggle visibility button */}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6"
+                    onClick={() => toggleTeamVisibility(group.team, groupItems)}
+                    title={allHidden ? "팀 전체 보이기" : "팀 전체 숨기기"}
+                  >
+                    {allHidden ? (
+                      <EyeOff className="h-3.5 w-3.5" />
+                    ) : (
+                      <Eye className="h-3.5 w-3.5" />
+                    )}
+                  </Button>
+                </div>
+
+                {/* Team items */}
+                <div className="flex flex-col gap-2 ml-7 pl-2 border-l-2 border-border/30">
+                    {groupItems.map((item) => {
+                      const isHidden = hiddenItems.has(item.name);
+                      return (
+                        <div
+                          key={item.name}
+                          className="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-background/30 transition-colors"
+                        >
+                          {/* Color indicator */}
+                          <div className="relative" ref={colorPickerOpen === item.name ? colorPickerRef : null}>
+                            <div
+                              className={styles.colorIndicator}
+                              style={{ "--legend-color": item.color } as React.CSSProperties}
+                              onClick={() => setColorPickerOpen(colorPickerOpen === item.name ? null : item.name)}
+                            />
+                            {colorPickerOpen === item.name && (
+                              <div className="absolute top-6 left-0 z-50 bg-background border rounded-lg shadow-lg p-2">
+                                <input
+                                  type="color"
+                                  value={item.color}
+                                  onChange={(e) => handleColorChange(item.name, e)}
+                                  className="w-8 h-8 cursor-pointer"
+                                  onClick={(e) => e.stopPropagation()}
+                                />
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Label */}
+                          <span
+                            className={cn(styles.label, isHidden && "line-through opacity-50")}
+                            style={!isHidden ? ({ "--label-color": item.color } as React.CSSProperties) : undefined}
+                          >
+                            {item.name}
+                          </span>
+
+                          {/* Toggle visibility button */}
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6"
+                            onClick={() => onToggleVisibility(item.name)}
+                            title={isHidden ? "보이기" : "숨기기"}
+                          >
+                            {isHidden ? (
+                              <EyeOff className="h-3.5 w-3.5" />
+                            ) : (
+                              <Eye className="h-3.5 w-3.5" />
+                            )}
+                          </Button>
+                        </div>
+                      );
+                    })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  // Render flat legend (original behavior)
   return (
-    <div className="flex flex-wrap gap-4 justify-center mt-4 p-4 bg-muted/30 rounded-lg">
+    <div className="flex flex-wrap gap-2 sm:gap-4 justify-start sm:justify-center mt-4 p-3 sm:p-4 bg-muted/30 rounded-lg">
       {items.map((item) => {
         const isHidden = hiddenItems.has(item.name);
         return (
           <div
             key={item.name}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-md hover:bg-background/50 transition-colors"
+            className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-md hover:bg-background/50 transition-colors"
           >
             {/* Color indicator */}
             <div className="relative" ref={colorPickerOpen === item.name ? colorPickerRef : null}>

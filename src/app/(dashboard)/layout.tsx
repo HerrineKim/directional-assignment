@@ -55,14 +55,14 @@ export default function DashboardLayout({
     <>
       <Link
         href="/board"
-        className="text-lg font-semibold hover:text-primary transition-colors"
+        className="text-base font-medium hover:text-primary transition-colors py-2 px-3 rounded-md hover:bg-accent"
         onClick={() => setIsMobileMenuOpen(false)}
       >
         게시판
       </Link>
       <Link
         href="/charts"
-        className="text-lg font-semibold hover:text-primary transition-colors"
+        className="text-base font-medium hover:text-primary transition-colors py-2 px-3 rounded-md hover:bg-accent"
         onClick={() => setIsMobileMenuOpen(false)}
       >
         데이터 시각화
@@ -85,12 +85,12 @@ export default function DashboardLayout({
                 <span className="sr-only">메뉴 열기</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-[300px] sm:w-[400px]">
-              <SheetHeader>
+            <SheetContent side="left" className="w-[280px] sm:w-[320px] p-0">
+              <SheetHeader className="px-6 pt-6 pb-4 border-b">
                 <SheetTitle>메뉴</SheetTitle>
                 <SheetDescription>페이지를 선택하세요</SheetDescription>
               </SheetHeader>
-              <nav className="flex flex-col gap-4 mt-6">{navLinks}</nav>
+              <nav className="flex flex-col px-6 py-4 gap-2">{navLinks}</nav>
             </SheetContent>
           </Sheet>
 
