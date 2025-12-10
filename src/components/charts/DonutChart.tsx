@@ -9,6 +9,8 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { CustomLegend } from "./CustomLegend";
+import styles from "./DonutChart.module.css";
+import { cn } from "@/lib/utils";
 
 interface DonutChartProps {
   data: Array<{ name: string; value: number }>;
@@ -122,40 +124,12 @@ export function DonutChart({
       {title && <h3 className="text-lg font-semibold">{title}</h3>}
       <div
         ref={containerRef}
-        className={`h-[300px] sm:h-[400px] ${
-          needsScroll ? "overflow-x-auto donut-chart-scroll-container" : "overflow-x-hidden"
-        }`}
-        style={
-          needsScroll
-            ? {
-                scrollbarWidth: "thin",
-                scrollbarColor: "hsl(var(--muted)) transparent",
-              }
-            : {}
-        }
-      >
-        {needsScroll && (
-          <style
-            dangerouslySetInnerHTML={{
-              __html: `
-            .donut-chart-scroll-container::-webkit-scrollbar {
-              height: 8px;
-            }
-            .donut-chart-scroll-container::-webkit-scrollbar-track {
-              background: transparent;
-            }
-            .donut-chart-scroll-container::-webkit-scrollbar-thumb {
-              background-color: hsl(var(--muted));
-              border-radius: 4px;
-            }
-            .donut-chart-scroll-container::-webkit-scrollbar-thumb:hover {
-              background-color: hsl(var(--muted-foreground) / 0.5);
-            }
-          `,
-            }}
-          />
+        className={cn(
+          styles.container,
+          needsScroll ? styles.scrollContainer : styles.noScrollContainer
         )}
-        <div ref={contentRef} className="min-w-[600px] h-full">
+      >
+        <div ref={contentRef} className={styles.content}>
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie

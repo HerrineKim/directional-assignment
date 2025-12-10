@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, Fragment } from "react";
 import {
   LineChart as RechartsLineChart,
   Line,
@@ -29,19 +29,31 @@ interface MultiLineChartProps {
   rightYAxisLabel: string;
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+interface TooltipPayloadEntry {
+  dataKey?: string;
+  value?: string | number;
+  name?: string | number;
+}
+
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: TooltipPayloadEntry[];
+  label?: string | number;
+}
+
+const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   if (!active || !payload || !payload.length) return null;
 
   // Group by team (same color) - find the team from the first payload entry
   const firstEntry = payload[0];
   if (!firstEntry?.dataKey) return null;
   
-  const teamName = firstEntry.dataKey.split("_")[0]; // Extract team name from key like "Frontend_bugs"
-  const teamEntries: Record<string, any> = {};
+  const teamName = String(firstEntry.dataKey).split("_")[0]; // Extract team name from key like "Frontend_bugs"
+  const teamEntries: Record<string, string | number> = {};
   
   // Collect all data for this team
-  payload.forEach((entry: any) => {
-    if (entry.dataKey?.startsWith(teamName + "_")) {
+  payload.forEach((entry: TooltipPayloadEntry) => {
+    if (entry.dataKey?.startsWith(teamName + "_") && entry.value !== undefined) {
       teamEntries[entry.dataKey] = entry.value;
     }
   });
@@ -160,9 +172,8 @@ export function MultiLineChart({
               const leftName = `${team.name} - ${leftYAxisLabel}`;
               const rightName = `${team.name} - ${rightYAxisLabel}`;
               return (
-                <>
+                <Fragment key={team.name}>
                   <Line
-                    key={`${team.name}_${team.leftKey}`}
                     yAxisId="left"
                     type="monotone"
                     dataKey={`${team.name}_${team.leftKey}`}
@@ -173,34 +184,38 @@ export function MultiLineChart({
                     hide={hiddenItems.has(leftName)}
                   />
                   <Line
-                    key={`${team.name}_${team.rightKey}`}
                     yAxisId="right"
                     type="monotone"
                     dataKey={`${team.name}_${team.rightKey}`}
                     stroke={color}
                     strokeDasharray="5 5"
                     strokeWidth={2}
-                    dot={(props: any) => (
-                      <Dot
-                        {...props}
-                        r={4}
-                        fill={color}
-                        stroke={color}
-                        strokeWidth={2}
-                      >
-                        <rect
-                          x={props.cx - 4}
-                          y={props.cy - 4}
-                          width={8}
-                          height={8}
+                    dot={(props: { cx?: number; cy?: number }) => {
+                      const { cx, cy } = props;
+                      if (cx === undefined || cy === undefined) return null;
+                      return (
+                        <Dot
+                          cx={cx}
+                          cy={cy}
+                          r={4}
                           fill={color}
-                        />
-                      </Dot>
-                    )}
+                          stroke={color}
+                          strokeWidth={2}
+                        >
+                          <rect
+                            x={cx - 4}
+                            y={cy - 4}
+                            width={8}
+                            height={8}
+                            fill={color}
+                          />
+                        </Dot>
+                      );
+                    }}
                     name={rightName}
                     hide={hiddenItems.has(rightName)}
                   />
-                </>
+                </Fragment>
               );
             })}
           </RechartsLineChart>

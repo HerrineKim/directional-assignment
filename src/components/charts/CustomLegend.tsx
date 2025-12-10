@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import styles from "./CustomLegend.module.css";
+import { cn } from "@/lib/utils";
 
 interface LegendItem {
   name: string;
@@ -58,8 +60,8 @@ export function CustomLegend({
             {/* Color indicator */}
             <div className="relative" ref={colorPickerOpen === item.name ? colorPickerRef : null}>
               <div
-                className="w-4 h-4 rounded border-2 border-background shadow-sm cursor-pointer"
-                style={{ backgroundColor: item.color }}
+                className={styles.colorIndicator}
+                style={{ "--legend-color": item.color } as React.CSSProperties}
                 onClick={() => setColorPickerOpen(colorPickerOpen === item.name ? null : item.name)}
               />
               {colorPickerOpen === item.name && (
@@ -77,8 +79,8 @@ export function CustomLegend({
 
             {/* Label */}
             <span
-              className={`text-sm ${isHidden ? "line-through opacity-50" : ""}`}
-              style={{ color: isHidden ? undefined : item.color }}
+              className={cn(styles.label, isHidden && "line-through opacity-50")}
+              style={!isHidden ? ({ "--label-color": item.color } as React.CSSProperties) : undefined}
             >
               {item.name}
             </span>

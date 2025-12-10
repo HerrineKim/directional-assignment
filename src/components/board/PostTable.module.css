@@ -1,0 +1,42 @@
+.table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.tableHead {
+  overflow: hidden;
+  position: relative;
+}
+
+.tableCell {
+  overflow: hidden;
+}
+
+.bodyText {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.resizer {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 4px;
+  cursor: col-resize;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.resizer:hover {
+  background-color: hsl(var(--primary) / 0.5);
+}
+
+.actionsHead {
+  width: 120px;
+}

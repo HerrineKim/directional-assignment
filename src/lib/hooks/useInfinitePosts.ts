@@ -36,15 +36,26 @@ export function useInfinitePosts(options: UseInfinitePostsOptions = {}) {
         const response = await postsApi.list(params);
 
         if (cursor) {
-          // Append or prepend based on direction
+          // Append or prepend based on direction, removing duplicates
           if (isNext) {
-            setPosts((prev) => [...prev, ...response.items]);
+            setPosts((prev) => {
+              const existingIds = new Set(prev.map((p) => p.id));
+              const newItems = response.items.filter((item) => !existingIds.has(item.id));
+              return [...prev, ...newItems];
+            });
           } else {
-            setPosts((prev) => [...response.items, ...prev]);
+            setPosts((prev) => {
+              const existingIds = new Set(prev.map((p) => p.id));
+              const newItems = response.items.filter((item) => !existingIds.has(item.id));
+              return [...newItems, ...prev];
+            });
           }
         } else {
-          // Initial load
-          setPosts(response.items);
+          // Initial load - remove duplicates within the response itself
+          const uniqueItems = response.items.filter(
+            (item, index, self) => index === self.findIndex((p) => p.id === item.id)
+          );
+          setPosts(uniqueItems);
         }
 
         setNextCursor(response.nextCursor);

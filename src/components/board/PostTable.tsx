@@ -13,8 +13,11 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ColumnVisibility, type ColumnConfig } from "./ColumnVisibility";
 import type { Post } from "@/lib/types/post";
+import styles from "./PostTable.module.css";
+import { cn } from "@/lib/utils";
 
 interface PostTableProps {
   posts: Post[];
@@ -168,58 +171,104 @@ export function PostTable({
 
       {/* Table View - 모든 화면 크기에서 표시 */}
       <div className="rounded-md border overflow-x-auto">
-        <Table ref={tableRef} style={{ tableLayout: "fixed", width: "100%" }}>
+        <Table ref={tableRef} className={styles.table}>
           <TableHeader>
             <TableRow>
-              {visibleColumns.map((column) => (
-                <TableHead
-                  key={column.id}
-                  style={{
-                    width: columnWidths[column.id] || defaultWidths[column.id],
-                    minWidth: minWidths[column.id] || 50,
-                    maxWidth: columnWidths[column.id] || defaultWidths[column.id],
-                    overflow: "hidden",
-                    position: "relative",
-                  }}
-                >
-                  <div className="flex items-center justify-between overflow-hidden">
-                    <span className="truncate">{column.label}</span>
-                    <div
-                      className="absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-primary/50 flex items-center justify-center shrink-0"
-                      onMouseDown={(e) => handleMouseDown(column.id, e)}
-                    >
-                      <GripVertical className="h-4 w-4 opacity-50" />
+              {visibleColumns.map((column) => {
+                const width = columnWidths[column.id] || defaultWidths[column.id];
+                const minWidth = minWidths[column.id] || 50;
+                return (
+                  <TableHead
+                    key={column.id}
+                    className={styles.tableHead}
+                    style={
+                      {
+                        "--column-width": `${width}px`,
+                        "--column-min-width": `${minWidth}px`,
+                        width: "var(--column-width)",
+                        minWidth: "var(--column-min-width)",
+                        maxWidth: "var(--column-width)",
+                      } as React.CSSProperties
+                    }
+                  >
+                    <div className="flex items-center justify-between overflow-hidden">
+                      <span className="truncate">{column.label}</span>
+                      <div
+                        className={styles.resizer}
+                        onMouseDown={(e) => handleMouseDown(column.id, e)}
+                      >
+                        <GripVertical className="h-4 w-4 opacity-50" />
+                      </div>
                     </div>
-                  </div>
-                </TableHead>
-              ))}
-              <TableHead style={{ width: 120 }}>작업</TableHead>
+                  </TableHead>
+                );
+              })}
+              <TableHead className={styles.actionsHead}>
+                작업
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {posts.length === 0 ? (
+            {isLoading ? (
+              // 로딩 중: skeleton rows 표시
+              Array.from({ length: 5 }).map((_, i) => (
+                <TableRow key={i}>
+                  {visibleColumns.map((column) => {
+                    const width = columnWidths[column.id] || defaultWidths[column.id];
+                    const minWidth = minWidths[column.id] || 50;
+                    return (
+                      <TableCell
+                        key={column.id}
+                        className={styles.tableCell}
+                        style={
+                          {
+                            "--cell-width": `${width}px`,
+                            "--cell-min-width": `${minWidth}px`,
+                            width: "var(--cell-width)",
+                            minWidth: "var(--cell-min-width)",
+                            maxWidth: "var(--cell-width)",
+                          } as React.CSSProperties
+                        }
+                      >
+                        <Skeleton className="h-5 w-full" />
+                      </TableCell>
+                    );
+                  })}
+                  <TableCell className={styles.actionsHead}>
+                    <Skeleton className="h-8 w-16" />
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : posts.length === 0 ? (
+              // 로딩 완료 후 게시글이 없을 때
               <TableRow>
                 <TableCell colSpan={visibleColumns.length + 1} className="text-center py-8">
                   게시글이 없습니다.
                 </TableCell>
               </TableRow>
             ) : (
+              // 게시글 목록 표시
               posts.map((post) => (
                 <TableRow key={post.id}>
                   {visibleColumns.map((column) => {
                     const needsWrap = column.id === "body" || column.id === "tags";
+                    const width = columnWidths[column.id] || defaultWidths[column.id];
+                    const minWidth = minWidths[column.id] || 50;
                     return (
                       <TableCell
                         key={column.id}
-                        style={{
-                          width: columnWidths[column.id] || defaultWidths[column.id],
-                          minWidth: minWidths[column.id] || 50,
-                          maxWidth: columnWidths[column.id] || defaultWidths[column.id],
-                          overflow: "hidden",
-                        }}
-                        className={needsWrap ? "whitespace-normal" : "truncate"}
+                        className={cn(styles.tableCell, needsWrap ? "whitespace-normal" : "truncate")}
+                        style={
+                          {
+                            "--cell-width": `${width}px`,
+                            "--cell-min-width": `${minWidth}px`,
+                            width: "var(--cell-width)",
+                            minWidth: "var(--cell-min-width)",
+                            maxWidth: "var(--cell-width)",
+                          } as React.CSSProperties
+                        }
                       >
-                        <div className={`overflow-hidden w-full ${needsWrap ? "" : "truncate"}`}>
+                        <div className={cn("overflow-hidden w-full", !needsWrap && "truncate")}>
                           {column.id === "id" && (
                             <span className="block truncate whitespace-nowrap" title={post.id}>
                               {post.id}
@@ -232,15 +281,8 @@ export function PostTable({
                           )}
                           {column.id === "body" && (
                             <span 
-                              className="block line-clamp-2 wrap-break-word overflow-hidden text-ellipsis" 
+                              className={styles.bodyText}
                               title={post.body}
-                              style={{
-                                display: "-webkit-box",
-                                WebkitLineClamp: 2,
-                                WebkitBoxOrient: "vertical",
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                              }}
                             >
                               {post.body}
                             </span>
@@ -293,9 +335,6 @@ export function PostTable({
         </Table>
       </div>
 
-      {isLoading && (
-        <div className="text-center py-4 text-muted-foreground">로딩 중...</div>
-      )}
 
       {hasMore && <div ref={loadMoreRef} className="h-10" />}
     </div>

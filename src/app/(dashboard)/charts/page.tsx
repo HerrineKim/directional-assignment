@@ -8,6 +8,7 @@ import { StackedBarChart } from "@/components/charts/StackedBarChart";
 import { StackedAreaChart } from "@/components/charts/StackedAreaChart";
 import { MultiLineChart } from "@/components/charts/MultiLineChart";
 import { mockApi } from "@/lib/api/mock";
+import ChartsLoading from "./loading";
 import type {
   TopCoffeeBrandsResponse,
   PopularSnackBrandsResponse,
@@ -174,11 +175,7 @@ export default function ChartsPage() {
   }, [snackImpact]);
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <p>데이터를 불러오는 중...</p>
-      </div>
-    );
+    return <ChartsLoading />;
   }
 
   if (error) {
