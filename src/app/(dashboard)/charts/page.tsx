@@ -112,6 +112,40 @@ export default function ChartsPage() {
     []
   );
 
+  // Normalize workout trend data to percentages (sum to 100%)
+  // Keep original values for tooltip display
+  const normalizedWorkoutTrend = useMemo(() => {
+    if (!workoutTrend) return [];
+    return workoutTrend.map((item) => {
+      const running = Number(item.running) || 0;
+      const cycling = Number(item.cycling) || 0;
+      const stretching = Number(item.stretching) || 0;
+      const total = running + cycling + stretching;
+      
+      if (total === 0) {
+        return {
+          ...item,
+          running: 0,
+          cycling: 0,
+          stretching: 0,
+          running_original: running,
+          cycling_original: cycling,
+          stretching_original: stretching,
+        };
+      }
+      
+      return {
+        ...item,
+        running: (running / total) * 100,
+        cycling: (cycling / total) * 100,
+        stretching: (stretching / total) * 100,
+        running_original: running,
+        cycling_original: cycling,
+        stretching_original: stretching,
+      };
+    });
+  }, [workoutTrend]);
+
   // Transform coffee consumption data
   const coffeeConsumptionData = useMemo(() => {
     if (!coffeeConsumption) return [];
@@ -288,7 +322,7 @@ export default function ChartsPage() {
           </CardHeader>
           <CardContent>
             <StackedBarChart
-              data={workoutTrend || []}
+              data={normalizedWorkoutTrend}
               xKey="week"
               stackKeys={workoutStackKeys}
               title=""
@@ -301,7 +335,7 @@ export default function ChartsPage() {
           </CardHeader>
           <CardContent>
             <StackedAreaChart
-              data={workoutTrend || []}
+              data={normalizedWorkoutTrend}
               xKey="week"
               stackKeys={workoutStackKeys}
               title=""

@@ -11,12 +11,15 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { CustomLegend } from "./CustomLegend";
+import { StackedTooltip } from "./StackedTooltip";
 
 interface StackedAreaChartProps<T = Record<string, string | number>> {
   data: T[];
   xKey: string;
   stackKeys: Array<{ key: string; name: string; color: string }>;
   title: string;
+  showOriginalValues?: boolean;
+  originalKeyMap?: Record<string, string>; // key -> originalKey mapping
 }
 
 export function StackedAreaChart<T extends Record<string, string | number>>({
@@ -24,6 +27,8 @@ export function StackedAreaChart<T extends Record<string, string | number>>({
   xKey,
   stackKeys,
   title,
+  showOriginalValues = false,
+  originalKeyMap = {},
 }: StackedAreaChartProps<T>) {
   const [itemColors, setItemColors] = useState<Record<string, string>>(() => {
     const initial: Record<string, string> = {};
@@ -70,8 +75,18 @@ export function StackedAreaChart<T extends Record<string, string | number>>({
           <RechartsAreaChart data={data}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey={xKey} />
-            <YAxis label={{ value: "백분율 (%)", angle: -90, position: "insideLeft" }} />
-            <Tooltip />
+            <YAxis 
+              label={{ value: "백분율 (%)", angle: -90, position: "insideLeft" }}
+              domain={[0, 100]}
+            />
+            <Tooltip 
+              content={
+                <StackedTooltip 
+                  showOriginal={showOriginalValues}
+                  originalKeys={originalKeyMap}
+                />
+              }
+            />
             {visibleStackKeys.map(({ key, name }) => (
               <Area
                 key={key}
