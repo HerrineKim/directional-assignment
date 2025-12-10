@@ -101,7 +101,7 @@ export function StackedBarChart<T extends Record<string, string | number>>({
               }
               cursor={{ fill: 'currentColor', opacity: 0.05 }}
             />
-            {visibleStackKeys.map(({ key, name }, index) => (
+            {visibleStackKeys.map(({ key, name }) => (
               <Bar
                 key={key}
                 dataKey={key}
@@ -109,7 +109,8 @@ export function StackedBarChart<T extends Record<string, string | number>>({
                 fill={itemColors[key] || stackKeys.find((sk) => sk.key === key)?.color || "#8884d8"}
                 name={name}
                 hide={hiddenItems.has(name)}
-                radius={index === visibleStackKeys.length - 1 ? [8, 8, 0, 0] : [0, 0, 0, 0]}
+                stroke="hsl(var(--background))"
+                strokeWidth={1}
                 animationDuration={800}
                 animationBegin={0}
               />

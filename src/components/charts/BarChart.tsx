@@ -102,7 +102,7 @@ export function BarChart({
       {title && <h3 className="text-lg font-semibold">{title}</h3>}
       <div className="h-[300px] sm:h-[400px] p-4 bg-gradient-to-br from-background to-muted/20 rounded-xl shadow-sm border">
         <ResponsiveContainer width="100%" height="100%">
-          <RechartsBarChart data={filteredData}>
+          <RechartsBarChart data={filteredData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
             <defs>
               {filteredData.map((entry, index) => {
                 const name = entry[nameKey as keyof typeof entry] as string;

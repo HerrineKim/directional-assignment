@@ -112,6 +112,15 @@ export function DonutChart({
     };
   }, [filteredData]);
 
+  useEffect(() => {
+    if (needsScroll && containerRef.current && contentRef.current) {
+      const containerWidth = containerRef.current.clientWidth;
+      const contentWidth = contentRef.current.scrollWidth;
+      const scrollToCenter = (contentWidth - containerWidth) / 2;
+      containerRef.current.scrollLeft = scrollToCenter;
+    }
+  }, [needsScroll]);
+
   const legendItems = useMemo(() => {
     return data.map((item) => {
       const name = item[nameKey as keyof typeof item] as string;

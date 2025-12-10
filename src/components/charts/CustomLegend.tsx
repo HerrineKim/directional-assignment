@@ -202,13 +202,13 @@ export function CustomLegend({
   }
 
   return (
-    <div className="flex flex-wrap gap-2 sm:gap-4 justify-start sm:justify-center mt-4 p-3 sm:p-4 bg-muted/30 rounded-lg">
+    <div className="flex flex-wrap gap-1 sm:gap-2 justify-start sm:justify-center mt-4 p-2 sm:p-3 bg-muted/30 rounded-lg">
       {items.map((item) => {
         const isHidden = hiddenItems.has(item.name);
         return (
           <div
             key={item.name}
-            className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-md hover:bg-background/50 transition-colors"
+            className="flex items-center gap-1 sm:gap-1.5 px-1.5 sm:px-2 py-1 rounded-md hover:bg-background/50 transition-colors"
           >
             <div className="relative" ref={colorPickerOpen === item.name ? colorPickerRef : null}>
               <div
