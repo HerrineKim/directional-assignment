@@ -155,10 +155,10 @@ export function PostFilters({
         </div>
 
         {hasActiveFilters && (
-          <Button variant="outline" onClick={onClear} className="w-full sm:w-auto">
-            <RotateCcw className="h-4 w-4" />
-            필터 초기화
-          </Button>
+            <Button variant="outline" onClick={onClear} className="w-full sm:w-auto self-end">
+              <RotateCcw className="h-4 w-4" />
+              필터 초기화
+            </Button>
         )}
       </div>
     </div>
