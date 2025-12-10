@@ -6,7 +6,7 @@
 
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useRef } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import styles from "./CustomLegend.module.css";
@@ -34,6 +34,38 @@ interface CustomLegendProps {
   groupedItems?: GroupedLegendItem[];
 }
 
+const ColorSwatch = ({
+  name,
+  color,
+  onChange,
+  label,
+}: {
+  name: string;
+  color: string;
+  label?: string;
+  onChange: (name: string, color: string) => void;
+}) => {
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  return (
+    <div className="relative">
+      <div
+        className={styles.colorIndicator}
+        style={{ "--legend-color": color } as React.CSSProperties}
+        onClick={() => inputRef.current?.click()}
+        title={label || "색상 변경"}
+      />
+      <input
+        ref={inputRef}
+        type="color"
+        aria-label={label || `${name} 색상 변경`}
+        value={color}
+        onChange={(e) => onChange(name, e.target.value)}
+        className="absolute inset-0 opacity-0 cursor-pointer"
+      />
+    </div>
+  );
+};
+
 export function CustomLegend({
   items,
   onColorChange,
@@ -42,29 +74,6 @@ export function CustomLegend({
   groupedByTeam = false,
   groupedItems = [],
 }: CustomLegendProps) {
-  const [colorPickerOpen, setColorPickerOpen] = useState<string | null>(null);
-  const colorPickerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (colorPickerRef.current && !colorPickerRef.current.contains(event.target as Node)) {
-        setColorPickerOpen(null);
-      }
-    };
-
-    if (colorPickerOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => {
-        document.removeEventListener("mousedown", handleClickOutside);
-      };
-    }
-  }, [colorPickerOpen]);
-
-  const handleColorChange = (name: string, e: React.ChangeEvent<HTMLInputElement>) => {
-    onColorChange(name, e.target.value);
-    setColorPickerOpen(null);
-  };
-
   const toggleTeamVisibility = (team: string, items: Array<{ name: string }>) => {
     const allHidden = items.every((item) => hiddenItems.has(item.name));
     items.forEach((item) => {
@@ -94,28 +103,16 @@ export function CustomLegend({
                 className="flex flex-col gap-2 px-3 py-2 rounded-md hover:bg-background/50 transition-colors border border-border/50"
               >
                 <div className="flex items-center gap-2">
-                  <div className="relative" ref={colorPickerOpen === group.team ? colorPickerRef : null}>
-                    <div
-                      className={styles.colorIndicator}
-                      style={{ "--legend-color": group.color } as React.CSSProperties}
-                      onClick={() => setColorPickerOpen(colorPickerOpen === group.team ? null : group.team)}
-                    />
-                    {colorPickerOpen === group.team && (
-                      <div className="absolute top-6 left-0 z-50 bg-background border rounded-lg shadow-lg p-2">
-                        <input
-                          type="color"
-                          value={group.color}
-                          onChange={(e) => {
-                            if (groupItems.length > 0) {
-                              handleColorChange(groupItems[0].name, e);
-                            }
-                          }}
-                          className="w-8 h-8 cursor-pointer"
-                          onClick={(e) => e.stopPropagation()}
-                        />
-                      </div>
-                    )}
-                  </div>
+                  <ColorSwatch
+                    name={groupItems[0]?.name ?? group.team}
+                    color={group.color}
+                    onChange={(name, color) => {
+                      if (groupItems.length > 0) {
+                        onColorChange(name, color);
+                      }
+                    }}
+                    label={`${group.team} 색상 변경`}
+                  />
 
                   <span
                     className={cn(
@@ -150,24 +147,7 @@ export function CustomLegend({
                           key={item.name}
                           className="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-background/30 transition-colors"
                         >
-                          <div className="relative" ref={colorPickerOpen === item.name ? colorPickerRef : null}>
-                            <div
-                              className={styles.colorIndicator}
-                              style={{ "--legend-color": item.color } as React.CSSProperties}
-                              onClick={() => setColorPickerOpen(colorPickerOpen === item.name ? null : item.name)}
-                            />
-                            {colorPickerOpen === item.name && (
-                              <div className="absolute top-6 left-0 z-50 bg-background border rounded-lg shadow-lg p-2">
-                                <input
-                                  type="color"
-                                  value={item.color}
-                                  onChange={(e) => handleColorChange(item.name, e)}
-                                  className="w-8 h-8 cursor-pointer"
-                                  onClick={(e) => e.stopPropagation()}
-                                />
-                              </div>
-                            )}
-                          </div>
+                          <ColorSwatch name={item.name} color={item.color} onChange={onColorChange} label={`${item.name} 색상 변경`} />
 
                           <span
                             className={cn(styles.label, isHidden && "line-through opacity-50")}
@@ -210,24 +190,7 @@ export function CustomLegend({
             key={item.name}
             className="flex items-center gap-1 sm:gap-1.5 px-1.5 sm:px-2 py-1 rounded-md hover:bg-background/50 transition-colors"
           >
-            <div className="relative" ref={colorPickerOpen === item.name ? colorPickerRef : null}>
-              <div
-                className={styles.colorIndicator}
-                style={{ "--legend-color": item.color } as React.CSSProperties}
-                onClick={() => setColorPickerOpen(colorPickerOpen === item.name ? null : item.name)}
-              />
-              {colorPickerOpen === item.name && (
-                <div className="absolute top-6 left-0 z-50 bg-background border rounded-lg shadow-lg p-2">
-                  <input
-                    type="color"
-                    value={item.color}
-                    onChange={(e) => handleColorChange(item.name, e)}
-                    className="w-8 h-8 cursor-pointer"
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                </div>
-              )}
-            </div>
+            <ColorSwatch name={item.name} color={item.color} onChange={onColorChange} label={`${item.name} 색상 변경`} />
 
             <span
               className={cn(styles.label, isHidden && "line-through opacity-50")}
