@@ -55,7 +55,7 @@ export function ColumnVisibility({ columns, onColumnsChange }: ColumnVisibilityP
   return (
     <>
       <Button
-        variant="outline"
+        variant="default"
         onClick={() => setOpen(true)}
         className="gap-2"
       >
@@ -64,7 +64,7 @@ export function ColumnVisibility({ columns, onColumnsChange }: ColumnVisibilityP
         ) : (
           <EyeOff className="h-4 w-4" />
         )}
-        컬럼 표시
+        컬럼 표시 설정
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
@@ -75,7 +75,7 @@ export function ColumnVisibility({ columns, onColumnsChange }: ColumnVisibilityP
               표시할 컬럼을 선택하세요. 최소 1개 이상의 컬럼을 표시해야 합니다.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-2 py-4">
+          <div className="space-y-2">
             {localColumns.map((column) => (
               <div key={column.id} className="flex items-center space-x-2">
                 <Checkbox

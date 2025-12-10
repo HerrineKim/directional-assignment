@@ -70,7 +70,7 @@ export function PostFilters({
               placeholder="제목 또는 본문 검색..."
               value={localSearch}
               onChange={(e) => setLocalSearch(e.target.value)}
-              className="pl-9 pr-9"
+              className="pl-9 pr-9 bg-white"
             />
             {localSearch && (
               <Button
@@ -105,12 +105,12 @@ export function PostFilters({
 
       <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4 sm:items-start">
         <div className="flex items-center gap-3 sm:flex-col sm:items-start">
-          <label className="text-sm font-medium sm:mb-2 whitespace-nowrap">카테고리</label>
+          <label className="text-sm font-medium whitespace-nowrap">카테고리</label>
           <Select value={category} onValueChange={(value) => onCategoryChange(value as Category | "ALL")}>
-            <SelectTrigger className="w-full sm:w-[140px]">
+            <SelectTrigger className="w-full sm:w-[140px] bg-white">
               <SelectValue placeholder="카테고리" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-white">
               <SelectItem value="ALL">전체</SelectItem>
               {POST_CATEGORIES.map((cat) => (
                 <SelectItem key={cat} value={cat}>
@@ -124,13 +124,13 @@ export function PostFilters({
         </div>
 
         <div className="flex items-center gap-3 sm:flex-col sm:items-start">
-          <label className="text-sm font-medium sm:mb-2 whitespace-nowrap">정렬</label>
+          <label className="text-sm font-medium whitespace-nowrap">정렬</label>
           <div className="flex gap-2 flex-1 sm:flex-none">
             <Select value={sort} onValueChange={(value) => onSortChange(value as SortField)}>
-              <SelectTrigger className="w-full sm:w-[140px]">
+              <SelectTrigger className="w-full sm:w-[140px] bg-white">
                 <SelectValue placeholder="정렬 기준" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white">
                 {SORT_FIELDS.map((field) => (
                   <SelectItem key={field} value={field}>
                     {field === "createdAt" ? "생성일" : "제목"}
@@ -140,10 +140,10 @@ export function PostFilters({
             </Select>
 
             <Select value={order} onValueChange={(value) => onOrderChange(value as SortOrder)}>
-              <SelectTrigger className="w-full sm:w-[120px]">
+              <SelectTrigger className="w-full sm:w-[120px] bg-white">
                 <SelectValue placeholder="정렬 방향" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white">
                 {SORT_ORDERS.map((ord) => (
                   <SelectItem key={ord} value={ord}>
                     {ord === "asc" ? "오름차순" : "내림차순"}

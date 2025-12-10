@@ -169,7 +169,7 @@ export function PostForm({ open, onOpenChange, onSubmit, initialData }: PostForm
               {...register("title")}
               aria-invalid={errors.title ? "true" : "false"}
               maxLength={80}
-              className="max-w-lg"
+              className="max-w-lg bg-white"
             />
             {errors.title && (
               <p className="text-sm text-destructive">{errors.title.message}</p>
@@ -185,10 +185,10 @@ export function PostForm({ open, onOpenChange, onSubmit, initialData }: PostForm
               control={control}
               render={({ field }) => (
                 <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger>
+                  <SelectTrigger className="bg-white">
                     <SelectValue placeholder="카테고리를 선택하세요" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white">
                     {POST_CATEGORIES.map((category) => (
                       <SelectItem key={category} value={category}>
                         {category === "NOTICE" && "공지"}
@@ -212,7 +212,7 @@ export function PostForm({ open, onOpenChange, onSubmit, initialData }: PostForm
             <textarea
               id="body"
               {...register("body")}
-              className="flex min-h-[200px] w-full max-w-lg rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex min-h-[200px] w-full max-w-lg rounded-md border border-input bg-white px-3 py-2 text-sm shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50"
               aria-invalid={errors.body ? "true" : "false"}
               maxLength={2000}
             />
@@ -240,7 +240,7 @@ export function PostForm({ open, onOpenChange, onSubmit, initialData }: PostForm
                 placeholder="태그를 입력하고 Enter를 누르세요"
                 maxLength={MAX_TAG_LENGTH}
                 disabled={tags.length >= MAX_TAGS}
-                className={`max-w-md ${tagError ? "border-destructive" : ""}`}
+                className={`max-w-md bg-white ${tagError ? "border-destructive" : ""}`}
               />
               <Button type="button" onClick={handleAddTag} disabled={tags.length >= MAX_TAGS}>
                 추가
