@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useMemo } from "react";
 import {
   BarChart as RechartsBarChart,
   Bar,
@@ -7,9 +8,9 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
 } from "recharts";
+import { CustomLegend } from "./CustomLegend";
 
 interface StackedBarChartProps<T = Record<string, string | number>> {
   data: T[];
@@ -24,23 +25,77 @@ export function StackedBarChart<T extends Record<string, string | number>>({
   stackKeys,
   title,
 }: StackedBarChartProps<T>) {
+  const [itemColors, setItemColors] = useState<Record<string, string>>(() => {
+    const initial: Record<string, string> = {};
+    stackKeys.forEach(({ key, color }) => {
+      initial[key] = color;
+    });
+    return initial;
+  });
+
+  const [hiddenItems, setHiddenItems] = useState<Set<string>>(new Set());
+
+  const handleColorChange = (name: string, color: string) => {
+    setItemColors((prev) => ({ ...prev, [name]: color }));
+  };
+
+  const handleToggleVisibility = (name: string) => {
+    setHiddenItems((prev) => {
+      const next = new Set(prev);
+      if (next.has(name)) {
+        next.delete(name);
+      } else {
+        next.add(name);
+      }
+      return next;
+    });
+  };
+
+  const visibleStackKeys = useMemo(() => {
+    return stackKeys.filter(({ name }) => !hiddenItems.has(name));
+  }, [stackKeys, hiddenItems]);
+
+  const legendItems = useMemo(() => {
+    return stackKeys.map(({ key, name }) => ({
+      name,
+      color: itemColors[key] || stackKeys.find((sk) => sk.key === key)?.color || "#8884d8",
+    }));
+  }, [stackKeys, itemColors]);
+
   return (
     <div className="space-y-4">
       {title && <h3 className="text-lg font-semibold">{title}</h3>}
       <div className="h-[300px] sm:h-[400px]">
         <ResponsiveContainer width="100%" height="100%">
-        <RechartsBarChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey={xKey} />
-          <YAxis label={{ value: "백분율 (%)", angle: -90, position: "insideLeft" }} />
-          <Tooltip />
-          <Legend />
-          {stackKeys.map(({ key, name, color }) => (
-            <Bar key={key} dataKey={key} stackId="a" fill={color} name={name} />
-          ))}
-        </RechartsBarChart>
+          <RechartsBarChart data={data}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey={xKey} />
+            <YAxis label={{ value: "백분율 (%)", angle: -90, position: "insideLeft" }} />
+            <Tooltip />
+            {visibleStackKeys.map(({ key, name }) => (
+              <Bar
+                key={key}
+                dataKey={key}
+                stackId="a"
+                fill={itemColors[key] || stackKeys.find((sk) => sk.key === key)?.color || "#8884d8"}
+                name={name}
+                hide={hiddenItems.has(name)}
+              />
+            ))}
+          </RechartsBarChart>
         </ResponsiveContainer>
       </div>
+      <CustomLegend
+        items={legendItems}
+        onColorChange={(name, color) => {
+          const stackKey = stackKeys.find((sk) => sk.name === name);
+          if (stackKey) {
+            handleColorChange(stackKey.key, color);
+          }
+        }}
+        onToggleVisibility={handleToggleVisibility}
+        hiddenItems={hiddenItems}
+      />
     </div>
   );
 }

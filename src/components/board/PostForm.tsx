@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/dialog";
 import { postSchema } from "@/lib/utils/validation";
 import { POST_CATEGORIES, MAX_TAGS, MAX_TAG_LENGTH } from "@/lib/constants";
+import { containsProfanity } from "@/lib/utils/profanity";
 import type { Post, Category } from "@/lib/types/post";
 
 interface PostFormProps {
@@ -37,12 +38,14 @@ export function PostForm({ open, onOpenChange, onSubmit, initialData }: PostForm
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [tagError, setTagError] = useState<string | null>(null);
 
   const {
     register,
     handleSubmit,
     control,
     reset,
+    setValue,
     formState: { errors },
     watch,
   } = useForm({
@@ -76,32 +79,50 @@ export function PostForm({ open, onOpenChange, onSubmit, initialData }: PostForm
       setTags([]);
     }
     setTagInput("");
+    setTagError(null);
   }, [initialData, open, reset]);
 
   const handleAddTag = () => {
     const trimmedTag = tagInput.trim();
-    if (!trimmedTag) return;
+    if (!trimmedTag) {
+      setTagError(null);
+      return;
+    }
+
+    // 금칙어 검사
+    if (containsProfanity(trimmedTag)) {
+      setTagError("태그에 금지된 단어가 포함되어 있습니다");
+      return;
+    }
 
     if (tags.length >= MAX_TAGS) {
+      setTagError(`태그는 최대 ${MAX_TAGS}개까지 추가할 수 있습니다`);
       return;
     }
 
     if (trimmedTag.length > MAX_TAG_LENGTH) {
+      setTagError(`태그는 ${MAX_TAG_LENGTH}자 이하여야 합니다`);
       return;
     }
 
     if (tags.includes(trimmedTag)) {
+      setTagError("이미 추가된 태그입니다");
       setTagInput("");
       return;
     }
 
+    // 에러가 없으면 태그 추가
+    setTagError(null);
     const newTags = [...tags, trimmedTag];
     setTags(newTags);
+    setValue("tags", newTags, { shouldValidate: true });
     setTagInput("");
   };
 
   const handleRemoveTag = (tagToRemove: string) => {
-    setTags(tags.filter((tag) => tag !== tagToRemove));
+    const newTags = tags.filter((tag) => tag !== tagToRemove);
+    setTags(newTags);
+    setValue("tags", newTags, { shouldValidate: true });
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -114,7 +135,9 @@ export function PostForm({ open, onOpenChange, onSubmit, initialData }: PostForm
   const onFormSubmit = async (data: z.infer<typeof postSchema>) => {
     try {
       setIsSubmitting(true);
-      await onSubmit({ ...data, tags });
+      // tags를 포함한 전체 데이터로 validation 재검사
+      const formData = { ...data, tags };
+      await onSubmit(formData);
     } finally {
       setIsSubmitting(false);
     }
@@ -140,6 +163,7 @@ export function PostForm({ open, onOpenChange, onSubmit, initialData }: PostForm
               {...register("title")}
               aria-invalid={errors.title ? "true" : "false"}
               maxLength={80}
+              className="max-w-lg"
             />
             {errors.title && (
               <p className="text-sm text-destructive">{errors.title.message}</p>
@@ -182,7 +206,7 @@ export function PostForm({ open, onOpenChange, onSubmit, initialData }: PostForm
             <textarea
               id="body"
               {...register("body")}
-              className="flex min-h-[200px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex min-h-[200px] w-full max-w-lg rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50"
               aria-invalid={errors.body ? "true" : "false"}
               maxLength={2000}
             />
@@ -202,16 +226,24 @@ export function PostForm({ open, onOpenChange, onSubmit, initialData }: PostForm
               <Input
                 id="tags"
                 value={tagInput}
-                onChange={(e) => setTagInput(e.target.value)}
+                onChange={(e) => {
+                  setTagInput(e.target.value);
+                  // 입력 시 에러 초기화
+                  if (tagError) setTagError(null);
+                }}
                 onKeyDown={handleKeyDown}
                 placeholder="태그를 입력하고 Enter를 누르세요"
                 maxLength={MAX_TAG_LENGTH}
                 disabled={tags.length >= MAX_TAGS}
+                className={`max-w-md ${tagError ? "border-destructive" : ""}`}
               />
               <Button type="button" onClick={handleAddTag} disabled={tags.length >= MAX_TAGS}>
                 추가
               </Button>
             </div>
+            {tagError && (
+              <p className="text-sm text-destructive">{tagError}</p>
+            )}
             {tags.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-2">
                 {tags.map((tag) => (
@@ -235,6 +267,9 @@ export function PostForm({ open, onOpenChange, onSubmit, initialData }: PostForm
               <p className="text-sm text-muted-foreground">
                 태그는 최대 {MAX_TAGS}개까지 추가할 수 있습니다.
               </p>
+            )}
+            {errors.tags && (
+              <p className="text-sm text-destructive">{errors.tags.message}</p>
             )}
           </div>
 

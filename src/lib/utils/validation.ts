@@ -13,7 +13,11 @@ export const postSchema = z.object({
   title: z
     .string()
     .min(1, "제목을 입력해주세요")
-    .max(MAX_TITLE_LENGTH, `제목은 ${MAX_TITLE_LENGTH}자 이하여야 합니다`),
+    .max(MAX_TITLE_LENGTH, `제목은 ${MAX_TITLE_LENGTH}자 이하여야 합니다`)
+    .refine(
+      (val) => !containsProfanity(val),
+      "제목에 금지된 단어가 포함되어 있습니다"
+    ),
   body: z
     .string()
     .min(1, "본문을 입력해주세요")
@@ -28,6 +32,10 @@ export const postSchema = z.object({
   tags: z
     .array(z.string().max(MAX_TAG_LENGTH, `태그는 ${MAX_TAG_LENGTH}자 이하여야 합니다`))
     .max(MAX_TAGS, `태그는 최대 ${MAX_TAGS}개까지 입력 가능합니다`)
+    .refine(
+      (tags) => !tags.some((tag) => containsProfanity(tag)),
+      "태그에 금지된 단어가 포함되어 있습니다"
+    )
     .default([]),
 });
 

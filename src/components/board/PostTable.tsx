@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
 import { ColumnVisibility, type ColumnConfig } from "./ColumnVisibility";
 import type { Post } from "@/lib/types/post";
 
@@ -45,6 +44,15 @@ const defaultWidths: Record<string, number> = {
   category: 100,
   tags: 200,
   createdAt: 180,
+};
+
+const minWidths: Record<string, number> = {
+  id: 60,
+  title: 80,
+  body: 100,
+  category: 70,
+  tags: 80,
+  createdAt: 120,
 };
 
 export function PostTable({
@@ -102,7 +110,8 @@ export function PostTable({
     (e: MouseEvent) => {
       if (!resizingColumn) return;
       const diff = e.clientX - resizeStartX;
-      const newWidth = Math.max(50, resizeStartWidth + diff);
+      const minWidth = minWidths[resizingColumn] || 50;
+      const newWidth = Math.max(minWidth, resizeStartWidth + diff);
       setColumnWidths((prev) => ({
         ...prev,
         [resizingColumn]: newWidth,
@@ -151,59 +160,15 @@ export function PostTable({
     }
   };
 
-  // Mobile Card View
-  const MobileCardView = ({ post }: { post: Post }) => (
-    <div className="border rounded-lg p-4 space-y-3">
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-lg truncate">{post.title}</h3>
-          <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{post.body}</p>
-        </div>
-        <div className="flex gap-1 shrink-0">
-          <Button variant="ghost" size="icon" onClick={() => onEdit(post)}>
-            <Edit className="h-4 w-4" />
-          </Button>
-          <Button variant="ghost" size="icon" onClick={() => onDelete(post.id)}>
-            <Trash2 className="h-4 w-4 text-destructive" />
-          </Button>
-        </div>
-      </div>
-      <div className="flex flex-wrap items-center gap-2 text-sm">
-        <Badge variant="outline">{getCategoryLabel(post.category)}</Badge>
-        {post.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1">
-            {post.tags.map((tag) => (
-              <Badge key={tag} variant="secondary" className="text-xs">
-                {tag}
-              </Badge>
-            ))}
-          </div>
-        )}
-        <span className="text-muted-foreground ml-auto">
-          {formatDate(post.createdAt)}
-        </span>
-      </div>
-    </div>
-  );
-
   return (
     <div className="space-y-4">
       <div className="flex justify-end">
         <ColumnVisibility columns={columns} onColumnsChange={setColumns} />
       </div>
 
-      {/* Mobile Card View */}
-      <div className="md:hidden space-y-4">
-        {posts.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">게시글이 없습니다.</div>
-        ) : (
-          posts.map((post) => <MobileCardView key={post.id} post={post} />)
-        )}
-      </div>
-
-      {/* Desktop Table View */}
-      <div className="hidden md:block rounded-md border overflow-x-auto">
-        <Table ref={tableRef}>
+      {/* Table View - 모든 화면 크기에서 표시 */}
+      <div className="rounded-md border overflow-x-auto">
+        <Table ref={tableRef} style={{ tableLayout: "fixed", width: "100%" }}>
           <TableHeader>
             <TableRow>
               {visibleColumns.map((column) => (
@@ -211,14 +176,16 @@ export function PostTable({
                   key={column.id}
                   style={{
                     width: columnWidths[column.id] || defaultWidths[column.id],
-                    minWidth: columnWidths[column.id] || defaultWidths[column.id],
+                    minWidth: minWidths[column.id] || 50,
+                    maxWidth: columnWidths[column.id] || defaultWidths[column.id],
+                    overflow: "hidden",
                     position: "relative",
                   }}
                 >
-                  <div className="flex items-center justify-between">
-                    <span>{column.label}</span>
+                  <div className="flex items-center justify-between overflow-hidden">
+                    <span className="truncate">{column.label}</span>
                     <div
-                      className="absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-primary/50 flex items-center justify-center"
+                      className="absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-primary/50 flex items-center justify-center shrink-0"
                       onMouseDown={(e) => handleMouseDown(column.id, e)}
                     >
                       <GripVertical className="h-4 w-4 opacity-50" />
@@ -239,37 +206,68 @@ export function PostTable({
             ) : (
               posts.map((post) => (
                 <TableRow key={post.id}>
-                  {visibleColumns.map((column) => (
-                    <TableCell
-                      key={column.id}
-                      style={{
-                        width: columnWidths[column.id] || defaultWidths[column.id],
-                        minWidth: columnWidths[column.id] || defaultWidths[column.id],
-                      }}
-                      className="truncate"
-                    >
-                      {column.id === "id" && post.id}
-                      {column.id === "title" && post.title}
-                      {column.id === "body" && (
-                        <span className="line-clamp-2" title={post.body}>
-                          {post.body}
-                        </span>
-                      )}
-                      {column.id === "category" && (
-                        <Badge variant="outline">{getCategoryLabel(post.category)}</Badge>
-                      )}
-                      {column.id === "tags" && (
-                        <div className="flex flex-wrap gap-1">
-                          {post.tags.map((tag) => (
-                            <Badge key={tag} variant="secondary" className="text-xs">
-                              {tag}
+                  {visibleColumns.map((column) => {
+                    const needsWrap = column.id === "body" || column.id === "tags";
+                    return (
+                      <TableCell
+                        key={column.id}
+                        style={{
+                          width: columnWidths[column.id] || defaultWidths[column.id],
+                          minWidth: minWidths[column.id] || 50,
+                          maxWidth: columnWidths[column.id] || defaultWidths[column.id],
+                          overflow: "hidden",
+                        }}
+                        className={needsWrap ? "whitespace-normal" : "truncate"}
+                      >
+                        <div className={`overflow-hidden w-full ${needsWrap ? "" : "truncate"}`}>
+                          {column.id === "id" && (
+                            <span className="block truncate whitespace-nowrap" title={post.id}>
+                              {post.id}
+                            </span>
+                          )}
+                          {column.id === "title" && (
+                            <span className="block truncate whitespace-nowrap" title={post.title}>
+                              {post.title}
+                            </span>
+                          )}
+                          {column.id === "body" && (
+                            <span 
+                              className="block line-clamp-2 wrap-break-word overflow-hidden text-ellipsis" 
+                              title={post.body}
+                              style={{
+                                display: "-webkit-box",
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: "vertical",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                              }}
+                            >
+                              {post.body}
+                            </span>
+                          )}
+                          {column.id === "category" && (
+                            <Badge variant="outline" className="truncate max-w-full inline-block whitespace-nowrap">
+                              {getCategoryLabel(post.category)}
                             </Badge>
-                          ))}
+                          )}
+                          {column.id === "tags" && (
+                            <div className="flex flex-wrap gap-1 overflow-hidden">
+                              {post.tags.map((tag) => (
+                                <Badge key={tag} variant="secondary" className="text-xs truncate max-w-full whitespace-nowrap">
+                                  {tag}
+                                </Badge>
+                              ))}
+                            </div>
+                          )}
+                          {column.id === "createdAt" && (
+                            <span className="block truncate whitespace-nowrap" title={formatDate(post.createdAt)}>
+                              {formatDate(post.createdAt)}
+                            </span>
+                          )}
                         </div>
-                      )}
-                      {column.id === "createdAt" && formatDate(post.createdAt)}
-                    </TableCell>
-                  ))}
+                      </TableCell>
+                    );
+                  })}
                   <TableCell>
                     <div className="flex gap-2">
                       <Button
