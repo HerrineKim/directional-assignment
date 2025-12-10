@@ -19,7 +19,7 @@ interface StackedBarChartProps<T = Record<string, string | number>> {
   stackKeys: Array<{ key: string; name: string; color: string }>;
   title: string;
   showOriginalValues?: boolean;
-  originalKeyMap?: Record<string, string>; // key -> originalKey mapping
+  originalKeyMap?: Record<string, string>;
 }
 
 export function StackedBarChart<T extends Record<string, string | number>>({
@@ -70,7 +70,7 @@ export function StackedBarChart<T extends Record<string, string | number>>({
   return (
     <div className="space-y-4">
       {title && <h3 className="text-lg font-semibold">{title}</h3>}
-      <div className="h-[300px] sm:h-[400px] p-4 bg-gradient-to-br from-background to-muted/20 rounded-xl shadow-sm border">
+      <div className="h-[300px] sm:h-[400px] p-4 bg-linear-to-br from-background to-muted/20 rounded-xl shadow-sm border">
         <ResponsiveContainer width="100%" height="100%">
           <RechartsBarChart data={data}>
             <CartesianGrid strokeDasharray="3 3" stroke="currentColor" opacity={0.1} />

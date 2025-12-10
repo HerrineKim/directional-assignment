@@ -18,9 +18,7 @@ class RateLimiter {
   private currentConcurrent = 0;
 
   constructor(options: { minInterval?: number; maxConcurrent?: number } = {}) {
-    // Minimum interval between requests (ms)
-    this.minInterval = options.minInterval || 100; // 100ms between requests
-    // Maximum concurrent requests
+    this.minInterval = options.minInterval || 100;
     this.maxConcurrent = options.maxConcurrent || 5;
   }
 
@@ -50,7 +48,6 @@ class RateLimiter {
 
       this.currentConcurrent++;
 
-      // Ensure minimum interval between requests
       const timeSinceLastRequest = Date.now() - this.lastRequestTime;
       if (timeSinceLastRequest < this.minInterval) {
         await new Promise((resolve) =>
@@ -86,9 +83,8 @@ class RateLimiter {
   }
 }
 
-// Create a singleton instance
 export const rateLimiter = new RateLimiter({
-  minInterval: 100, // 100ms between requests
-  maxConcurrent: 5, // Max 5 concurrent requests
+  minInterval: 100,
+  maxConcurrent: 5,
 });
 

@@ -53,7 +53,6 @@ export function PostFilters({
 
   return (
     <div className="space-y-4">
-      {/* 검색 */}
       <div>
         <label className="text-sm font-medium mb-2 block">검색</label>
         <form onSubmit={handleSearchSubmit} className="flex flex-col sm:flex-row gap-2">
@@ -73,7 +72,6 @@ export function PostFilters({
                 size="icon"
                 className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
                 onClick={() => setLocalSearch("")}
-                title="입력 지우기"
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -89,7 +87,6 @@ export function PostFilters({
                   setLocalSearch("");
                   onSearchChange("");
                 }}
-                title="검색 결과 지우기"
               >
                 <RotateCcw className="h-4 w-4" />
                 검색 초기화
@@ -99,9 +96,7 @@ export function PostFilters({
         </form>
       </div>
 
-      {/* 필터 */}
       <div className="flex flex-col sm:flex-row flex-wrap gap-4 items-end">
-        {/* 카테고리 필터 */}
         <div>
           <label className="text-sm font-medium mb-2 block">카테고리</label>
           <Select value={category} onValueChange={(value) => onCategoryChange(value as Category | "ALL")}>
@@ -121,7 +116,6 @@ export function PostFilters({
           </Select>
         </div>
 
-        {/* 정렬 필터 그룹 */}
         <div>
           <label className="text-sm font-medium mb-2 block">정렬</label>
           <div className="flex gap-2">
@@ -153,7 +147,6 @@ export function PostFilters({
           </div>
         </div>
 
-        {/* 초기화 버튼 */}
         {hasActiveFilters && (
           <Button variant="outline" onClick={onClear} className="w-full sm:w-auto">
             <RotateCcw className="h-4 w-4" />

@@ -1,4 +1,3 @@
-// Top Coffee Brands
 export interface TopCoffeeBrandItem {
   brand: string;
   popularity: number;
@@ -6,7 +5,6 @@ export interface TopCoffeeBrandItem {
 
 export type TopCoffeeBrandsResponse = TopCoffeeBrandItem[];
 
-// Popular Snack Brands
 export interface PopularSnackBrandItem {
   name: string;
   share: number;
@@ -14,7 +12,6 @@ export interface PopularSnackBrandItem {
 
 export type PopularSnackBrandsResponse = PopularSnackBrandItem[];
 
-// Weekly Mood Trend
 export interface WeeklyMoodItem extends Record<string, string | number> {
   week: string;
   happy: number;
@@ -24,7 +21,6 @@ export interface WeeklyMoodItem extends Record<string, string | number> {
 
 export type WeeklyMoodTrendResponse = WeeklyMoodItem[];
 
-// Weekly Workout Trend
 export interface WeeklyWorkoutItem extends Record<string, string | number> {
   week: string;
   running: number;
@@ -34,7 +30,6 @@ export interface WeeklyWorkoutItem extends Record<string, string | number> {
 
 export type WeeklyWorkoutTrendResponse = WeeklyWorkoutItem[];
 
-// Coffee Consumption
 export interface CoffeeDataPoint {
   cups: number;
   bugs: number;
@@ -50,7 +45,6 @@ export interface CoffeeConsumptionResponse {
   teams: CoffeeTeam[];
 }
 
-// Snack Impact
 export interface SnackImpactDataPoint {
   snacks: number;
   meetingsMissed: number;

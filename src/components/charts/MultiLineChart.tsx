@@ -44,7 +44,6 @@ interface CustomTooltipProps {
 const CustomTooltip = ({ active, payload, label, hoveredTeams }: CustomTooltipProps) => {
   if (!active || !payload || !payload.length || !hoveredTeams || hoveredTeams.length === 0) return null;
 
-  // Group data by team for all hovered teams
   const teamData: Record<string, Record<string, string | number>> = {};
 
   hoveredTeams.forEach((teamName) => {
@@ -59,7 +58,6 @@ const CustomTooltip = ({ active, payload, label, hoveredTeams }: CustomTooltipPr
     }
   });
 
-  // If no data found, don't show tooltip
   if (Object.keys(teamData).length === 0) return null;
 
   const xValue = label;
@@ -99,8 +97,6 @@ const CustomTooltip = ({ active, payload, label, hoveredTeams }: CustomTooltipPr
 export function MultiLineChart({
   data,
   xKey,
-  leftYAxisKey,
-  rightYAxisKey,
   teams,
   title,
   leftYAxisLabel,
@@ -117,9 +113,8 @@ export function MultiLineChart({
   const [hiddenItems, setHiddenItems] = useState<Set<string>>(new Set());
   const [hoveredTeams, setHoveredTeams] = useState<string[]>([]);
 
-  // Find teams with identical data points
   const findOverlappingTeams = (
-    payload: any,
+    payload: Record<string, string | number>,
     currentTeam: string,
     dataKey: string
   ): string[] => {
@@ -134,7 +129,6 @@ export function MultiLineChart({
       const teamValue = payload[`${team.name}_${dataKey}`];
       if (teamValue === undefined || teamValue === null) return;
 
-      // Only include teams with exactly the same value
       if (Number(teamValue) === Number(currentValue)) {
         overlapping.push(team.name);
       }
@@ -144,7 +138,6 @@ export function MultiLineChart({
   };
 
   const handleColorChange = (name: string, color: string) => {
-    // Extract team name from legend item name (format: "TeamName - Label")
     const teamName = name.split(" - ")[0];
     setTeamColors((prev) => ({ ...prev, [teamName]: color }));
   };
@@ -242,7 +235,7 @@ export function MultiLineChart({
                     strokeWidth={3}
                     animationDuration={800}
                     animationBegin={0}
-                    dot={(props: { cx?: number; cy?: number; payload?: any }) => {
+                    dot={(props: { cx?: number; cy?: number; payload?: Record<string, string | number> }) => {
                       const { cx, cy, payload } = props;
                       if (cx === undefined || cy === undefined) return null;
                       return (
@@ -262,7 +255,7 @@ export function MultiLineChart({
                         />
                       );
                     }}
-                    activeDot={(props: { cx?: number; cy?: number; payload?: any }) => {
+                    activeDot={(props: { cx?: number; cy?: number; payload?: Record<string, string | number> }) => {
                       const { cx, cy, payload } = props;
                       if (cx === undefined || cy === undefined) return null;
                       return (
@@ -294,7 +287,7 @@ export function MultiLineChart({
                     strokeWidth={3}
                     animationDuration={800}
                     animationBegin={0}
-                    dot={(props: { cx?: number; cy?: number; payload?: any }) => {
+                    dot={(props: { cx?: number; cy?: number; payload?: Record<string, string | number> }) => {
                       const { cx, cy, payload } = props;
                       if (cx === undefined || cy === undefined) return null;
                       const size = 6;
@@ -318,7 +311,7 @@ export function MultiLineChart({
                         />
                       );
                     }}
-                    activeDot={(props: { cx?: number; cy?: number; payload?: any }) => {
+                    activeDot={(props: { cx?: number; cy?: number; payload?: Record<string, string | number> }) => {
                       const { cx, cy, payload } = props;
                       if (cx === undefined || cy === undefined) return null;
                       const size = 8;

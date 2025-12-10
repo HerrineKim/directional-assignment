@@ -11,25 +11,17 @@ import {
 import { CustomLegend } from "./CustomLegend";
 import styles from "./DonutChart.module.css";
 import { cn } from "@/lib/utils";
+import { CHART_COLORS, CHART_ANIMATION_DURATION, CHART_ANIMATION_BEGIN } from "@/lib/constants";
 
 interface DonutChartProps {
   data: Array<{ name: string; value: number }>;
   dataKey: string;
   nameKey: string;
   title: string;
-  colors?: string[];
+  colors?: readonly string[];
 }
 
-const COLORS = [
-  "#FF6B9D", // 핑크
-  "#C44569", // 라즈베리
-  "#FFA07A", // 연어
-  "#FFD93D", // 밝은 노랑
-  "#6BCB77", // 민트 그린
-  "#4D96FF", // 밝은 파랑
-  "#9D84B7", // 라벤더
-  "#FDA085", // 복숭아
-];
+const COLORS = CHART_COLORS;
 
 export function DonutChart({
   data,
@@ -76,12 +68,10 @@ export function DonutChart({
       if (containerRef.current && contentRef.current) {
         const containerWidth = containerRef.current.clientWidth;
         const contentWidth = contentRef.current.scrollWidth;
-        // 실제로 스크롤이 가능한지 확인 (스크롤바 너비 포함, 더 큰 여유 공간)
-        const scrollbarWidth = 17; // 일반적인 스크롤바 너비
-        const threshold = 50; // 더 큰 여유 공간
+        const scrollbarWidth = 17;
+        const threshold = 50;
         const actuallyNeedsScroll = contentWidth > containerWidth + scrollbarWidth + threshold;
         
-        // 실제로 스크롤이 가능한지 테스트
         if (actuallyNeedsScroll && containerRef.current) {
           const originalScrollLeft = containerRef.current.scrollLeft;
           containerRef.current.scrollLeft = 1;
@@ -94,9 +84,7 @@ export function DonutChart({
       }
     };
 
-    // 약간의 지연을 두어 렌더링 완료 후 확인
     const timeoutId = setTimeout(checkScroll, 150);
-    // ResizeObserver를 사용하여 더 정확한 감지
     let resizeObserver: ResizeObserver | null = null;
     if (containerRef.current && contentRef.current) {
       resizeObserver = new ResizeObserver(() => {
@@ -136,7 +124,7 @@ export function DonutChart({
         className={cn(
           styles.container,
           needsScroll ? styles.scrollContainer : styles.noScrollContainer,
-          "bg-gradient-to-br from-background to-muted/20 rounded-xl shadow-sm border p-4"
+          "bg-linear-to-br from-background to-muted/20 rounded-xl shadow-sm border p-4"
         )}
       >
         <div ref={contentRef} className={styles.content}>
@@ -165,8 +153,8 @@ export function DonutChart({
                 fill="#8884d8"
                 dataKey={dataKey}
                 nameKey={nameKey}
-                animationDuration={800}
-                animationBegin={0}
+                animationDuration={CHART_ANIMATION_DURATION}
+                animationBegin={CHART_ANIMATION_BEGIN}
               >
                 {filteredData.map((entry, index) => {
                   const name = entry[nameKey as keyof typeof entry] as string;

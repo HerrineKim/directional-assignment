@@ -89,7 +89,6 @@ export function PostForm({ open, onOpenChange, onSubmit, initialData }: PostForm
       return;
     }
 
-    // 금칙어 검사
     if (containsProfanity(trimmedTag)) {
       setTagError("태그에 금지된 단어가 포함되어 있습니다");
       return;
@@ -111,7 +110,6 @@ export function PostForm({ open, onOpenChange, onSubmit, initialData }: PostForm
       return;
     }
 
-    // 에러가 없으면 태그 추가
     setTagError(null);
     const newTags = [...tags, trimmedTag];
     setTags(newTags);
@@ -126,6 +124,7 @@ export function PostForm({ open, onOpenChange, onSubmit, initialData }: PostForm
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.nativeEvent.isComposing) return;
     if (e.key === "Enter") {
       e.preventDefault();
       handleAddTag();
@@ -135,7 +134,6 @@ export function PostForm({ open, onOpenChange, onSubmit, initialData }: PostForm
   const onFormSubmit = async (data: z.infer<typeof postSchema>) => {
     try {
       setIsSubmitting(true);
-      // tags를 포함한 전체 데이터로 validation 재검사
       const formData = { ...data, tags };
       await onSubmit(formData);
     } finally {
@@ -228,7 +226,6 @@ export function PostForm({ open, onOpenChange, onSubmit, initialData }: PostForm
                 value={tagInput}
                 onChange={(e) => {
                   setTagInput(e.target.value);
-                  // 입력 시 에러 초기화
                   if (tagError) setTagError(null);
                 }}
                 onKeyDown={handleKeyDown}

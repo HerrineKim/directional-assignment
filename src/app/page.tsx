@@ -6,9 +6,10 @@ import { useAuthStore } from "@/lib/stores/authStore";
 
 export default function Home() {
   const router = useRouter();
-  const { isAuthenticated, hasHydrated, setHasHydrated } = useAuthStore();
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const hasHydrated = useAuthStore((state) => state.hasHydrated);
+  const setHasHydrated = useAuthStore((state) => state.setHasHydrated);
 
-  // Mark hydration as complete on client side
   useEffect(() => {
     if (typeof window !== "undefined") {
       setHasHydrated(true);
@@ -16,7 +17,6 @@ export default function Home() {
   }, [setHasHydrated]);
 
   useEffect(() => {
-    // Wait for hydration to complete before checking auth
     if (!hasHydrated) {
       return;
     }

@@ -25,7 +25,14 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login, isLoading, error, clearError, isAuthenticated, hasHydrated, setHasHydrated } = useAuthStore();
+
+  const login = useAuthStore((state) => state.login);
+  const isLoading = useAuthStore((state) => state.isLoading);
+  const error = useAuthStore((state) => state.error);
+  const clearError = useAuthStore((state) => state.clearError);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const hasHydrated = useAuthStore((state) => state.hasHydrated);
+  const setHasHydrated = useAuthStore((state) => state.setHasHydrated);
 
   const {
     register,
@@ -35,7 +42,6 @@ export default function LoginPage() {
     resolver: zodResolver(loginSchema),
   });
 
-  // Mark hydration as complete on client side
   useEffect(() => {
     if (typeof window !== "undefined") {
       setHasHydrated(true);
@@ -43,7 +49,6 @@ export default function LoginPage() {
   }, [setHasHydrated]);
 
   useEffect(() => {
-    // Wait for hydration to complete before checking auth
     if (!hasHydrated) {
       return;
     }
@@ -60,12 +65,8 @@ export default function LoginPage() {
   }, [clearError]);
 
   const onSubmit = async (data: LoginFormData) => {
-    try {
-      await login(data);
-      router.push("/board");
-    } catch {
-      // Error is already handled in the store
-    }
+    await login(data);
+    router.push("/board");
   };
 
   return (

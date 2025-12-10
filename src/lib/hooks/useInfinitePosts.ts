@@ -12,8 +12,8 @@ interface UseInfinitePostsOptions {
 
 export function useInfinitePosts(options: UseInfinitePostsOptions = {}) {
   const [posts, setPosts] = useState<Post[]>([]);
-  const [nextCursor, setNextCursor] = useState<string | undefined>();
-  const [prevCursor, setPrevCursor] = useState<string | undefined>();
+  const [nextCursor, setNextCursor] = useState<string>();
+  const [prevCursor, setPrevCursor] = useState<string>();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [hasMore, setHasMore] = useState(true);
@@ -36,7 +36,6 @@ export function useInfinitePosts(options: UseInfinitePostsOptions = {}) {
         const response = await postsApi.list(params);
 
         if (cursor) {
-          // Append or prepend based on direction, removing duplicates
           if (isNext) {
             setPosts((prev) => {
               const existingIds = new Set(prev.map((p) => p.id));
@@ -51,7 +50,6 @@ export function useInfinitePosts(options: UseInfinitePostsOptions = {}) {
             });
           }
         } else {
-          // Initial load - remove duplicates within the response itself
           const uniqueItems = response.items.filter(
             (item, index, self) => index === self.findIndex((p) => p.id === item.id)
           );
@@ -62,7 +60,7 @@ export function useInfinitePosts(options: UseInfinitePostsOptions = {}) {
         setPrevCursor(response.prevCursor);
         setHasMore(!!response.nextCursor);
       } catch (err) {
-        setError(err instanceof Error ? err : new Error("Failed to load posts"));
+        setError(err instanceof Error ? err : new Error("게시글 로드에 실패했습니다"));
         setHasMore(false);
       } finally {
         setIsLoading(false);

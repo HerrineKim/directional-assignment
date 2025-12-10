@@ -11,7 +11,7 @@ interface StackedTooltipProps {
   }>;
   label?: string;
   showOriginal?: boolean;
-  originalKeys?: Record<string, string>; // key -> originalKey mapping
+  originalKeys?: Record<string, string>;
 }
 
 export function StackedTooltip({ 
@@ -29,7 +29,6 @@ export function StackedTooltip({
       {payload.map((entry, index) => {
         if (!entry.dataKey || !entry.name) return null;
         
-        // If showOriginal is true, try to find original value
         let displayValue = entry.value;
         if (showOriginal && entry.payload) {
           const originalKey = originalKeys[entry.dataKey] || `${entry.dataKey}_original`;
@@ -39,7 +38,6 @@ export function StackedTooltip({
           }
         }
 
-        // Format value: round to 2 decimal places and add %
         const formattedValue = typeof displayValue === 'number' 
           ? (showOriginal ? displayValue.toFixed(2) : Number(displayValue.toFixed(2)))
           : displayValue;

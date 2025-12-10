@@ -60,16 +60,12 @@ export function CustomLegend({
 
   const toggleTeamVisibility = (team: string, items: Array<{ name: string }>) => {
     const allHidden = items.every((item) => hiddenItems.has(item.name));
-    // Toggle each item individually
     items.forEach((item) => {
-      // If all are hidden, show them; otherwise hide them
       if (allHidden) {
-        // Show all if all are hidden
         if (hiddenItems.has(item.name)) {
           onToggleVisibility(item.name);
         }
       } else {
-        // Hide all if any are visible
         if (!hiddenItems.has(item.name)) {
           onToggleVisibility(item.name);
         }
@@ -77,7 +73,6 @@ export function CustomLegend({
     });
   };
 
-  // Render grouped legend by team
   if (groupedByTeam && groupedItems.length > 0) {
     return (
       <div className="mt-4 p-3 sm:p-4 bg-muted/30 rounded-lg">
@@ -91,9 +86,7 @@ export function CustomLegend({
                 key={group.team}
                 className="flex flex-col gap-2 px-3 py-2 rounded-md hover:bg-background/50 transition-colors border border-border/50"
               >
-                {/* Team header */}
                 <div className="flex items-center gap-2">
-                  {/* Team color indicator */}
                   <div className="relative" ref={colorPickerOpen === group.team ? colorPickerRef : null}>
                     <div
                       className={styles.colorIndicator}
@@ -106,8 +99,6 @@ export function CustomLegend({
                           type="color"
                           value={group.color}
                           onChange={(e) => {
-                            // Update team color by calling handleColorChange with the first item
-                            // The MultiLineChart component will extract the team name and update all items
                             if (groupItems.length > 0) {
                               handleColorChange(groupItems[0].name, e);
                             }
@@ -119,7 +110,6 @@ export function CustomLegend({
                     )}
                   </div>
 
-                  {/* Team name */}
                   <span
                     className={cn(
                       "font-semibold text-sm",
@@ -130,7 +120,6 @@ export function CustomLegend({
                     {group.team}
                   </span>
 
-                  {/* Team-level toggle visibility button */}
                   <Button
                     variant="ghost"
                     size="icon"
@@ -146,7 +135,6 @@ export function CustomLegend({
                   </Button>
                 </div>
 
-                {/* Team items */}
                 <div className="flex flex-col gap-2 ml-7 pl-2 border-l-2 border-border/30">
                     {groupItems.map((item) => {
                       const isHidden = hiddenItems.has(item.name);
@@ -155,7 +143,6 @@ export function CustomLegend({
                           key={item.name}
                           className="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-background/30 transition-colors"
                         >
-                          {/* Color indicator */}
                           <div className="relative" ref={colorPickerOpen === item.name ? colorPickerRef : null}>
                             <div
                               className={styles.colorIndicator}
@@ -175,7 +162,6 @@ export function CustomLegend({
                             )}
                           </div>
 
-                          {/* Label */}
                           <span
                             className={cn(styles.label, isHidden && "line-through opacity-50")}
                             style={!isHidden ? ({ "--label-color": item.color } as React.CSSProperties) : undefined}
@@ -183,7 +169,6 @@ export function CustomLegend({
                             {item.name}
                           </span>
 
-                          {/* Toggle visibility button */}
                           <Button
                             variant="ghost"
                             size="icon"
@@ -209,7 +194,6 @@ export function CustomLegend({
     );
   }
 
-  // Render flat legend (original behavior)
   return (
     <div className="flex flex-wrap gap-2 sm:gap-4 justify-start sm:justify-center mt-4 p-3 sm:p-4 bg-muted/30 rounded-lg">
       {items.map((item) => {
@@ -219,7 +203,6 @@ export function CustomLegend({
             key={item.name}
             className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-md hover:bg-background/50 transition-colors"
           >
-            {/* Color indicator */}
             <div className="relative" ref={colorPickerOpen === item.name ? colorPickerRef : null}>
               <div
                 className={styles.colorIndicator}
@@ -239,7 +222,6 @@ export function CustomLegend({
               )}
             </div>
 
-            {/* Label */}
             <span
               className={cn(styles.label, isHidden && "line-through opacity-50")}
               style={!isHidden ? ({ "--label-color": item.color } as React.CSSProperties) : undefined}
@@ -247,7 +229,6 @@ export function CustomLegend({
               {item.name}
             </span>
 
-            {/* Toggle visibility button */}
             <Button
               variant="ghost"
               size="icon"

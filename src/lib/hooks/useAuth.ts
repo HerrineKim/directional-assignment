@@ -7,7 +7,6 @@ export function useAuth(redirectToLogin = false) {
   const router = useRouter();
   const { isAuthenticated, token, logout, setHasHydrated } = useAuthStore();
 
-  // Mark hydration as complete on client side
   useEffect(() => {
     if (typeof window !== "undefined") {
       setHasHydrated(true);
@@ -15,7 +14,6 @@ export function useAuth(redirectToLogin = false) {
   }, [setHasHydrated]);
 
   useEffect(() => {
-    // Sync token from localStorage to apiClient
     if (token && typeof window !== "undefined") {
       const storedToken = localStorage.getItem("auth_token");
       if (storedToken && storedToken !== token) {

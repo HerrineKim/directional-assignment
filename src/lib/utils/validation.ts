@@ -7,7 +7,7 @@ import {
   POST_CATEGORIES,
 } from "../constants";
 import { containsProfanity } from "./profanity";
-import type { Category, PostCreateRequest } from "../types/post";
+import type { Category } from "../types/post";
 
 export const postSchema = z.object({
   title: z

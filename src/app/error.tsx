@@ -18,6 +18,7 @@ export default function Error({
     <div className="flex min-h-screen flex-col items-center justify-center gap-4">
       <h2 className="text-2xl font-bold">문제가 발생했습니다</h2>
       <p className="text-muted-foreground">{error.message}</p>
+      <p className="text-muted-foreground">관리자에게 문의해주세요: <a href="mailto:admin@directional.com" className="text-primary hover:underline">admin@directional.com</a></p>
       <Button onClick={reset}>다시 시도</Button>
     </div>
   );

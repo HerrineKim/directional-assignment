@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Menu, X, FileText, BarChart3 } from "lucide-react";
+import { Menu, FileText, BarChart3 } from "lucide-react";
 import { useAuthStore } from "@/lib/stores/authStore";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,14 +24,12 @@ export default function DashboardLayout({
   const { isAuthenticated, logout, user, hasHydrated, setHasHydrated } = useAuthStore();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Mark hydration as complete on client side
   useEffect(() => {
     if (typeof window !== "undefined") {
       setHasHydrated(true);
     }
   }, [setHasHydrated]);
 
-  // Wait for hydration to complete before checking auth
   useEffect(() => {
     if (!hasHydrated) {
       return;
@@ -42,7 +40,6 @@ export default function DashboardLayout({
     }
   }, [isAuthenticated, hasHydrated, router]);
 
-  // Show loading state while hydrating or if not authenticated after hydration
   if (!hasHydrated || !isAuthenticated) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -76,10 +73,8 @@ export default function DashboardLayout({
     <div className="min-h-screen bg-background">
       <header className="border-b sticky top-0 z-50 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-6">{navLinks}</nav>
 
-          {/* Mobile Menu Button */}
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild className="md:hidden">
               <Button variant="ghost" size="icon">

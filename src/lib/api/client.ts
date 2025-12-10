@@ -13,7 +13,6 @@ class ApiClient {
       },
     });
 
-    // Request interceptor to add auth token
     this.client.interceptors.request.use(
       (config) => {
         const token = this.getToken();
@@ -27,10 +26,8 @@ class ApiClient {
       }
     );
 
-    // Response interceptor to handle errors and rate limiting
     this.client.interceptors.response.use(
       (response) => {
-        // Check rate limit headers
         const remaining = response.headers["x-ratelimit-remaining"];
         const reset = response.headers["x-ratelimit-reset"];
         
@@ -42,13 +39,11 @@ class ApiClient {
       },
       async       (error: AxiosError) => {
         if (error.response?.status === 401) {
-          // Token expired or invalid
           this.clearToken();
           if (typeof window !== "undefined") {
             window.location.href = "/login";
           }
         } else if (error.response?.status === 429) {
-          // Rate limit exceeded
           const retryAfter = error.response.headers["retry-after"];
           const message = retryAfter
             ? `Rate limit exceeded. Please try again in ${retryAfter} seconds.`
@@ -56,7 +51,6 @@ class ApiClient {
           
           console.error("Rate limit exceeded:", message);
           
-          // Create a new error with a user-friendly message
           const rateLimitError = new Error(message) as Error & { status?: number; retryAfter?: string };
           rateLimitError.status = 429;
           rateLimitError.retryAfter = retryAfter;
@@ -90,7 +84,6 @@ class ApiClient {
     return this.client;
   }
 
-  // Wrapper methods that apply rate limiting on client side
   public async request<T = unknown>(config: AxiosRequestConfig): Promise<AxiosResponse<T>> {
     if (typeof window !== "undefined") {
       return rateLimiter.execute(() => this.client.request<T>(config));

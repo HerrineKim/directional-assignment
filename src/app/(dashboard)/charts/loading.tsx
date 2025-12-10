@@ -6,7 +6,6 @@ export default function ChartsLoading() {
     <div className="container mx-auto px-4 py-8 space-y-8">
       <Skeleton className="h-9 w-48" />
 
-      {/* Coffee Brands */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
@@ -30,7 +29,6 @@ export default function ChartsLoading() {
         </Card>
       </div>
 
-      {/* Snack Brands */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
@@ -54,7 +52,6 @@ export default function ChartsLoading() {
         </Card>
       </div>
 
-      {/* Trend Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
@@ -78,7 +75,6 @@ export default function ChartsLoading() {
         </Card>
       </div>
 
-      {/* Multi-line Charts */}
       <Card>
         <CardHeader>
           <CardTitle>

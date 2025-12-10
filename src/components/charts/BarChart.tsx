@@ -12,18 +12,19 @@ import {
   Cell,
 } from "recharts";
 import { CustomLegend } from "./CustomLegend";
+import { CHART_COLORS, CHART_ANIMATION_DURATION, CHART_ANIMATION_BEGIN } from "@/lib/constants";
 
 interface BarChartProps {
   data: Array<{ name: string; value: number }>;
   dataKey: string;
   nameKey: string;
   title: string;
-  colors?: string[];
+  colors?: readonly string[];
 }
 
 interface CustomTooltipProps {
   active?: boolean;
-  payload?: Array<{ name?: string; value?: number; payload?: any }>;
+  payload?: Array<{ name?: string; value?: number; payload?: Record<string, unknown> }>;
   label?: string;
 }
 
@@ -39,16 +40,7 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   );
 };
 
-const DEFAULT_COLORS = [
-  "#FF6B9D", // 핑크
-  "#C44569", // 라즈베리
-  "#FFA07A", // 연어
-  "#FFD93D", // 밝은 노랑
-  "#6BCB77", // 민트 그린
-  "#4D96FF", // 밝은 파랑
-  "#9D84B7", // 라벤더
-  "#FDA085", // 복숭아
-];
+const DEFAULT_COLORS = CHART_COLORS;
 
 export function BarChart({
   data,
@@ -130,8 +122,8 @@ export function BarChart({
             <Bar
               dataKey={dataKey}
               radius={[8, 8, 0, 0]}
-              animationDuration={800}
-              animationBegin={0}
+              animationDuration={CHART_ANIMATION_DURATION}
+              animationBegin={CHART_ANIMATION_BEGIN}
             >
               {filteredData.map((entry, index) => {
                 const name = entry[nameKey as keyof typeof entry] as string;

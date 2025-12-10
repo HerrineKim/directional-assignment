@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { BarChart3 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CHART_COLORS } from "@/lib/constants";
 import { BarChart } from "@/components/charts/BarChart";
 import { DonutChart } from "@/components/charts/DonutChart";
 import { StackedBarChart } from "@/components/charts/StackedBarChart";
@@ -19,16 +20,7 @@ import type {
   SnackImpactResponse,
 } from "@/lib/types/chart";
 
-const COLORS = [
-  "#FF6B9D", // 핑크
-  "#C44569", // 라즈베리
-  "#FFA07A", // 연어
-  "#FFD93D", // 밝은 노랑
-  "#6BCB77", // 민트 그린
-  "#4D96FF", // 밝은 파랑
-  "#9D84B7", // 라벤더
-  "#FDA085", // 복숭아
-];
+const COLORS = CHART_COLORS;
 
 export default function ChartsPage() {
   const [coffeeBrands, setCoffeeBrands] = useState<TopCoffeeBrandsResponse | null>(null);
@@ -68,7 +60,6 @@ export default function ChartsPage() {
     loadData();
   }, []);
 
-  // Transform coffee brands data
   const coffeeBarData = useMemo(() => {
     if (!coffeeBrands) return [];
     return coffeeBrands.map((item) => ({
@@ -85,7 +76,6 @@ export default function ChartsPage() {
     }));
   }, [coffeeBrands]);
 
-  // Transform snack brands data
   const snackBarData = useMemo(() => {
     if (!snackBrands) return [];
     return snackBrands.map((item) => ({
@@ -102,7 +92,6 @@ export default function ChartsPage() {
     }));
   }, [snackBrands]);
 
-  // Transform mood trend data
   const moodStackKeys = useMemo(
     () => [
       { key: "happy", name: "행복", color: COLORS[0] },
@@ -112,7 +101,6 @@ export default function ChartsPage() {
     []
   );
 
-  // Transform workout trend data
   const workoutStackKeys = useMemo(
     () => [
       { key: "running", name: "러닝", color: COLORS[0] },
@@ -122,8 +110,6 @@ export default function ChartsPage() {
     []
   );
 
-  // Normalize workout trend data to percentages (sum to 100%)
-  // Keep original values for tooltip display
   const normalizedWorkoutTrend = useMemo(() => {
     if (!workoutTrend) return [];
     return workoutTrend.map((item) => {
@@ -156,7 +142,6 @@ export default function ChartsPage() {
     });
   }, [workoutTrend]);
 
-  // Transform coffee consumption data
   const coffeeConsumptionData = useMemo(() => {
     if (!coffeeConsumption) return [];
     const teams = coffeeConsumption.teams;
@@ -187,7 +172,6 @@ export default function ChartsPage() {
     }));
   }, [coffeeConsumption]);
 
-  // Transform snack impact data
   const snackImpactData = useMemo(() => {
     if (!snackImpact) return [];
     const departments = snackImpact.departments;
@@ -237,7 +221,6 @@ export default function ChartsPage() {
         데이터 시각화
       </h1>
 
-      {/* Coffee Brands */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
@@ -267,7 +250,6 @@ export default function ChartsPage() {
         </Card>
       </div>
 
-      {/* Snack Brands */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
@@ -297,7 +279,6 @@ export default function ChartsPage() {
         </Card>
       </div>
 
-      {/* Mood Trend */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
@@ -327,7 +308,6 @@ export default function ChartsPage() {
         </Card>
       </div>
 
-      {/* Workout Trend */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
@@ -357,7 +337,6 @@ export default function ChartsPage() {
         </Card>
       </div>
 
-      {/* Coffee Consumption */}
       <Card>
         <CardHeader>
           <CardTitle>팀별 커피 소비 영향</CardTitle>
@@ -376,7 +355,6 @@ export default function ChartsPage() {
         </CardContent>
       </Card>
 
-      {/* Snack Impact */}
       <Card>
         <CardHeader>
           <CardTitle>부서별 간식 영향</CardTitle>

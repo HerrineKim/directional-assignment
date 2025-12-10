@@ -25,6 +25,7 @@ import { ColumnVisibility, type ColumnConfig } from "./ColumnVisibility";
 import type { Post } from "@/lib/types/post";
 import styles from "./PostTable.module.css";
 import { cn } from "@/lib/utils";
+import { STORAGE_KEY_COLUMNS, STORAGE_KEY_WIDTHS } from "@/lib/constants";
 
 interface PostTableProps {
   posts: Post[];
@@ -34,9 +35,6 @@ interface PostTableProps {
   hasMore: boolean;
   isLoading: boolean;
 }
-
-const STORAGE_KEY_COLUMNS = "post_table_columns_v2";
-const STORAGE_KEY_WIDTHS = "post_table_widths_v2";
 
 const defaultColumns: ColumnConfig[] = [
   { id: "title", label: "제목", visible: true },
@@ -174,7 +172,6 @@ export function PostTable({
         <ColumnVisibility columns={columns} onColumnsChange={setColumns} />
       </div>
 
-      {/* Table View - 모든 화면 크기에서 표시 */}
       <div className="rounded-md border overflow-x-auto">
         <Table ref={tableRef} className={styles.table}>
           <TableHeader>
@@ -215,7 +212,6 @@ export function PostTable({
           </TableHeader>
           <TableBody>
             {isLoading ? (
-              // 로딩 중: skeleton rows 표시
               Array.from({ length: 5 }).map((_, i) => (
                 <TableRow key={i}>
                   {visibleColumns.map((column) => {
@@ -245,16 +241,18 @@ export function PostTable({
                 </TableRow>
               ))
             ) : posts.length === 0 ? (
-              // 로딩 완료 후 게시글이 없을 때
               <TableRow>
                 <TableCell colSpan={visibleColumns.length + 1} className="text-center py-8">
                   게시글이 없습니다.
                 </TableCell>
               </TableRow>
             ) : (
-              // 게시글 목록 표시
               posts.map((post) => (
-                <TableRow key={post.id}>
+                <TableRow
+                  key={post.id}
+                  className="cursor-pointer hover:bg-muted/50"
+                  onClick={() => setSelectedPost(post)}
+                >
                   {visibleColumns.map((column) => {
                     const needsWrap = column.id === "body" || column.id === "tags";
                     const width = columnWidths[column.id] || defaultWidths[column.id];
@@ -275,20 +273,12 @@ export function PostTable({
                       >
                         <div className={cn("overflow-hidden w-full", !needsWrap && "truncate")}>
                           {column.id === "title" && (
-                            <span
-                              className="block truncate whitespace-nowrap cursor-pointer hover:text-primary hover:underline"
-                              title="클릭하여 전체 내용 보기"
-                              onClick={() => setSelectedPost(post)}
-                            >
+                            <span className="block truncate whitespace-nowrap">
                               {post.title}
                             </span>
                           )}
                           {column.id === "body" && (
-                            <span
-                              className={cn(styles.bodyText, "cursor-pointer hover:text-primary")}
-                              title="클릭하여 전체 내용 보기"
-                              onClick={() => setSelectedPost(post)}
-                            >
+                            <span className={styles.bodyText}>
                               {post.body}
                             </span>
                           )}
@@ -320,14 +310,20 @@ export function PostTable({
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => onEdit(post)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onEdit(post);
+                        }}
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => onDelete(post.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onDelete(post.id);
+                        }}
                       >
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
@@ -343,7 +339,6 @@ export function PostTable({
 
       {hasMore && <div ref={loadMoreRef} className="h-10" />}
 
-      {/* Post Detail Dialog */}
       <Dialog open={!!selectedPost} onOpenChange={(open) => !open && setSelectedPost(null)}>
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
           {selectedPost && (

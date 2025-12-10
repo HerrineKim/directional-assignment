@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -11,9 +10,6 @@ export default function LoginError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  useEffect(() => {
-    console.error("Login page error:", error);
-  }, [error]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
