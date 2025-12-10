@@ -21,17 +21,34 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const { isAuthenticated, logout, user } = useAuthStore();
+  const { isAuthenticated, logout, user, hasHydrated, setHasHydrated } = useAuthStore();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  // Mark hydration as complete on client side
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      setHasHydrated(true);
+    }
+  }, [setHasHydrated]);
+
+  // Wait for hydration to complete before checking auth
+  useEffect(() => {
+    if (!hasHydrated) {
+      return;
+    }
+
     if (!isAuthenticated) {
       router.push("/login");
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, hasHydrated, router]);
 
-  if (!isAuthenticated) {
-    return null;
+  // Show loading state while hydrating or if not authenticated after hydration
+  if (!hasHydrated || !isAuthenticated) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <p>로딩 중...</p>
+      </div>
+    );
   }
 
   const navLinks = (

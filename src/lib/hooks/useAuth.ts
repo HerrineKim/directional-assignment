@@ -5,7 +5,14 @@ import { apiClient } from "../api/client";
 
 export function useAuth(redirectToLogin = false) {
   const router = useRouter();
-  const { isAuthenticated, token, logout } = useAuthStore();
+  const { isAuthenticated, token, logout, setHasHydrated } = useAuthStore();
+
+  // Mark hydration as complete on client side
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setHasHydrated(true);
+    }
+  }, [setHasHydrated]);
 
   useEffect(() => {
     // Sync token from localStorage to apiClient
