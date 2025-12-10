@@ -52,7 +52,7 @@ class ApiClient {
         
         return response;
       },
-      async       (error: AxiosError) => {
+      async (error: AxiosError) => {
         if (error.response?.status === 401) {
           this.clearToken();
           if (typeof window !== "undefined") {

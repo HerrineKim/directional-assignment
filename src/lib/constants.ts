@@ -47,24 +47,6 @@ export const CHART_ANIMATION_DURATION = 800;
 /** 차트 애니메이션 시작 지연 시간 (ms) */
 export const CHART_ANIMATION_BEGIN = 0;
 
-/** 차트 높이 - 모바일 (px) */
-export const CHART_HEIGHT_MOBILE = 300;
-
-/** 차트 높이 - 데스크톱 (px) */
-export const CHART_HEIGHT_DESKTOP = 400;
-
-/** 라인 차트 높이 - 모바일 (px) */
-export const LINE_CHART_HEIGHT_MOBILE = 450;
-
-/** 라인 차트 높이 - 데스크톱 (px) */
-export const LINE_CHART_HEIGHT_DESKTOP = 600;
-
-/** 검색 디바운스 시간 (ms) */
-export const SEARCH_DEBOUNCE_MS = 500;
-
-/** 페이지당 게시글 수 */
-export const POSTS_PER_PAGE = 20;
-
 /** 게시글 테이블 컬럼 설정 localStorage 키 */
 export const STORAGE_KEY_COLUMNS = "post_table_columns_v2";
 

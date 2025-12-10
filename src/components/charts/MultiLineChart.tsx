@@ -22,8 +22,6 @@ import { CustomLegend } from "./CustomLegend";
 interface MultiLineChartProps {
   data: Array<Record<string, string | number>>;
   xKey: string;
-  leftYAxisKey: string;
-  rightYAxisKey: string;
   teams: Array<{
     name: string;
     leftKey: string;
@@ -200,7 +198,7 @@ export function MultiLineChart({
   return (
     <div className="space-y-4">
       {title && <h3 className="text-lg font-semibold">{title}</h3>}
-      <div className="h-[450px] sm:h-[600px] pb-8 p-4 bg-gradient-to-br from-background to-muted/20 rounded-xl shadow-sm border">
+      <div className="h-[450px] sm:h-[600px] pb-8 p-4 bg-linear-to-br from-background to-muted/20 rounded-xl shadow-sm border">
         <ResponsiveContainer width="100%" height="100%">
           <RechartsLineChart data={data} margin={{ bottom: 30 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="currentColor" opacity={0.1} />

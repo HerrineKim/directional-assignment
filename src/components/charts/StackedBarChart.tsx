@@ -6,7 +6,7 @@
 
 "use client";
 
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import {
   BarChart as RechartsBarChart,
   Bar,
@@ -18,6 +18,7 @@ import {
 } from "recharts";
 import { CustomLegend } from "./CustomLegend";
 import { StackedTooltip } from "./StackedTooltip";
+import { useChartLegend } from "@/lib/hooks/useChartLegend";
 
 /** StackedBarChart 컴포넌트 props */
 interface StackedBarChartProps<T = Record<string, string | number>> {
@@ -37,31 +38,17 @@ export function StackedBarChart<T extends Record<string, string | number>>({
   showOriginalValues = false,
   originalKeyMap = {},
 }: StackedBarChartProps<T>) {
-  const [itemColors, setItemColors] = useState<Record<string, string>>(() => {
+  const initialColors = useMemo(() => {
     const initial: Record<string, string> = {};
     stackKeys.forEach(({ key, color }) => {
       initial[key] = color;
     });
     return initial;
+  }, [stackKeys]);
+
+  const { itemColors, hiddenItems, handleColorChange, handleToggleVisibility } = useChartLegend({
+    initialColors,
   });
-
-  const [hiddenItems, setHiddenItems] = useState<Set<string>>(new Set());
-
-  const handleColorChange = (name: string, color: string) => {
-    setItemColors((prev) => ({ ...prev, [name]: color }));
-  };
-
-  const handleToggleVisibility = (name: string) => {
-    setHiddenItems((prev) => {
-      const next = new Set(prev);
-      if (next.has(name)) {
-        next.delete(name);
-      } else {
-        next.add(name);
-      }
-      return next;
-    });
-  };
 
   const visibleStackKeys = useMemo(() => {
     return stackKeys.filter(({ name }) => !hiddenItems.has(name));

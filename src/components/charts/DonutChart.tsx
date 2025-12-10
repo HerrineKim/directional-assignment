@@ -6,7 +6,7 @@
 
 "use client";
 
-import { useState, useMemo, useRef, useEffect } from "react";
+import { useMemo, useRef, useEffect, useState } from "react";
 import {
   PieChart,
   Pie,
@@ -15,6 +15,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { CustomLegend } from "./CustomLegend";
+import { useChartLegend } from "@/lib/hooks/useChartLegend";
 import styles from "./DonutChart.module.css";
 import { cn } from "@/lib/utils";
 import { CHART_COLORS, CHART_ANIMATION_DURATION, CHART_ANIMATION_BEGIN } from "@/lib/constants";
@@ -37,34 +38,21 @@ export function DonutChart({
   title,
   colors = COLORS,
 }: DonutChartProps) {
-  const [itemColors, setItemColors] = useState<Record<string, string>>(() => {
+  const initialColors = useMemo(() => {
     const initial: Record<string, string> = {};
     data.forEach((item, index) => {
       initial[item[nameKey as keyof typeof item] as string] = colors[index % colors.length];
     });
     return initial;
+  }, [data, nameKey, colors]);
+
+  const { itemColors, hiddenItems, handleColorChange, handleToggleVisibility } = useChartLegend({
+    initialColors,
   });
 
-  const [hiddenItems, setHiddenItems] = useState<Set<string>>(new Set());
   const [needsScroll, setNeedsScroll] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-
-  const handleColorChange = (name: string, color: string) => {
-    setItemColors((prev) => ({ ...prev, [name]: color }));
-  };
-
-  const handleToggleVisibility = (name: string) => {
-    setHiddenItems((prev) => {
-      const next = new Set(prev);
-      if (next.has(name)) {
-        next.delete(name);
-      } else {
-        next.add(name);
-      }
-      return next;
-    });
-  };
 
   const filteredData = useMemo(() => {
     return data.filter((item) => !hiddenItems.has(item[nameKey as keyof typeof item] as string));
@@ -91,21 +79,21 @@ export function DonutChart({
       }
     };
 
+    const handleResize = () => {
+      setTimeout(checkScroll, 50);
+    };
+
     const timeoutId = setTimeout(checkScroll, 150);
     let resizeObserver: ResizeObserver | null = null;
     if (containerRef.current && contentRef.current) {
-      resizeObserver = new ResizeObserver(() => {
-        setTimeout(checkScroll, 50);
-      });
+      resizeObserver = new ResizeObserver(handleResize);
       resizeObserver.observe(containerRef.current);
       resizeObserver.observe(contentRef.current);
     }
-    window.addEventListener("resize", () => {
-      setTimeout(checkScroll, 50);
-    });
+    window.addEventListener("resize", handleResize);
     return () => {
       clearTimeout(timeoutId);
-      window.removeEventListener("resize", checkScroll);
+      window.removeEventListener("resize", handleResize);
       if (resizeObserver) {
         resizeObserver.disconnect();
       }

@@ -18,17 +18,3 @@ export function containsProfanity(text: string): boolean {
   return PROFANITY_WORDS.some((word) => lowerText.includes(word.toLowerCase()));
 }
 
-/**
- * 텍스트에서 발견된 금지어 목록을 반환합니다.
- * @param text - 검사할 텍스트
- * @returns 발견된 금지어 배열 (없으면 빈 배열)
- * @example
- * getProfanityWords("캄보디아 프놈펜 여행") // ["캄보디아", "프놈펜"]
- */
-export function getProfanityWords(text: string): string[] {
-  const lowerText = text.toLowerCase();
-  return PROFANITY_WORDS.filter((word) =>
-    lowerText.includes(word.toLowerCase())
-  );
-}
-

@@ -345,8 +345,6 @@ export default function ChartsPage() {
           <MultiLineChart
             data={coffeeConsumptionData}
             xKey="cups"
-            leftYAxisKey="bugs"
-            rightYAxisKey="productivity"
             teams={coffeeTeams}
             title=""
             leftYAxisLabel="버그 수"
@@ -363,8 +361,6 @@ export default function ChartsPage() {
           <MultiLineChart
             data={snackImpactData}
             xKey="snacks"
-            leftYAxisKey="meetingsMissed"
-            rightYAxisKey="morale"
             teams={snackTeams}
             title=""
             leftYAxisLabel="회의불참"

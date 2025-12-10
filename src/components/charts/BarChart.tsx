@@ -6,7 +6,7 @@
 
 "use client";
 
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import {
   BarChart as RechartsBarChart,
   Bar,
@@ -18,6 +18,7 @@ import {
   Cell,
 } from "recharts";
 import { CustomLegend } from "./CustomLegend";
+import { useChartLegend } from "@/lib/hooks/useChartLegend";
 import { CHART_COLORS, CHART_ANIMATION_DURATION, CHART_ANIMATION_BEGIN } from "@/lib/constants";
 
 /** BarChart 컴포넌트 props */
@@ -56,31 +57,17 @@ export function BarChart({
   title,
   colors = DEFAULT_COLORS,
 }: BarChartProps) {
-  const [itemColors, setItemColors] = useState<Record<string, string>>(() => {
+  const initialColors = useMemo(() => {
     const initial: Record<string, string> = {};
     data.forEach((item, index) => {
       initial[item[nameKey as keyof typeof item] as string] = colors[index % colors.length];
     });
     return initial;
+  }, [data, nameKey, colors]);
+
+  const { itemColors, hiddenItems, handleColorChange, handleToggleVisibility } = useChartLegend({
+    initialColors,
   });
-
-  const [hiddenItems, setHiddenItems] = useState<Set<string>>(new Set());
-
-  const handleColorChange = (name: string, color: string) => {
-    setItemColors((prev) => ({ ...prev, [name]: color }));
-  };
-
-  const handleToggleVisibility = (name: string) => {
-    setHiddenItems((prev) => {
-      const next = new Set(prev);
-      if (next.has(name)) {
-        next.delete(name);
-      } else {
-        next.add(name);
-      }
-      return next;
-    });
-  };
 
   const filteredData = useMemo(() => {
     return data.filter((item) => !hiddenItems.has(item[nameKey as keyof typeof item] as string));
@@ -100,7 +87,7 @@ export function BarChart({
   return (
     <div className="space-y-4">
       {title && <h3 className="text-lg font-semibold">{title}</h3>}
-      <div className="h-[300px] sm:h-[400px] p-4 bg-gradient-to-br from-background to-muted/20 rounded-xl shadow-sm border">
+      <div className="h-[300px] sm:h-[400px] p-4 bg-linear-to-br from-background to-muted/20 rounded-xl shadow-sm border">
         <ResponsiveContainer width="100%" height="100%">
           <RechartsBarChart data={filteredData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
             <defs>
