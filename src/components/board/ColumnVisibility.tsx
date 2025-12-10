@@ -1,3 +1,9 @@
+/**
+ * 컬럼 가시성 설정 컴포넌트
+ * 테이블에서 표시할 컬럼을 선택할 수 있는 다이얼로그를 제공합니다.
+ * 최소 1개 이상의 컬럼이 항상 표시되도록 보장합니다.
+ */
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -12,6 +18,7 @@ import {
 } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 
+/** 컬럼 설정 타입 */
 export interface ColumnConfig {
   id: string;
   label: string;

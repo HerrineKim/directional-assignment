@@ -1,3 +1,9 @@
+/**
+ * 폼 유효성 검사 스키마
+ * Zod를 사용한 게시글 폼 데이터 유효성 검사 스키마를 정의합니다.
+ * 제목, 본문, 카테고리, 태그에 대한 길이 제한 및 금지어 검사를 포함합니다.
+ */
+
 import { z } from "zod";
 import {
   MAX_TITLE_LENGTH,
@@ -9,6 +15,13 @@ import {
 import { containsProfanity } from "./profanity";
 import type { Category } from "../types/post";
 
+/**
+ * 게시글 폼 유효성 검사 스키마
+ * - title: 1~80자, 금지어 불포함
+ * - body: 1~2000자, 금지어 불포함
+ * - category: NOTICE, QNA, FREE 중 하나
+ * - tags: 최대 5개, 각 24자 이하, 금지어 불포함
+ */
 export const postSchema = z.object({
   title: z
     .string()

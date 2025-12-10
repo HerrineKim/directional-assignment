@@ -1,3 +1,10 @@
+/**
+ * 게시글 폼 컴포넌트
+ * 게시글 작성 및 수정을 위한 모달 폼을 제공합니다.
+ * react-hook-form과 Zod를 사용한 유효성 검사를 포함하며,
+ * 태그 입력, 금지어 필터링 기능을 지원합니다.
+ */
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -27,6 +34,7 @@ import { POST_CATEGORIES, MAX_TAGS, MAX_TAG_LENGTH } from "@/lib/constants";
 import { containsProfanity } from "@/lib/utils/profanity";
 import type { Post, Category } from "@/lib/types/post";
 
+/** PostForm 컴포넌트 props */
 interface PostFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;

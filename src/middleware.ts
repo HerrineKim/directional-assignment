@@ -1,11 +1,30 @@
+/**
+ * Next.js 미들웨어 - 서버 측 Rate Limiting
+ * 모든 요청에 대해 IP 기반 Rate Limiting을 적용합니다.
+ *
+ * 주요 기능:
+ * - 60초당 최대 60개 요청 제한
+ * - 정적 리소스 제외 (이미지, 스크립트 등)
+ * - Rate Limit 헤더 자동 설정
+ * - 429 Too Many Requests 응답 처리
+ */
+
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+/** Rate Limit 기록 저장소 (IP별 요청 횟수 및 리셋 시간) */
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
 
+/** Rate Limit 윈도우 (60초) */
 const RATE_LIMIT_WINDOW = 60 * 1000;
+
+/** 윈도우당 최대 요청 수 */
 const MAX_REQUESTS_PER_WINDOW = 60;
 
+/**
+ * 클라이언트 식별자를 생성합니다.
+ * IP 주소와 User-Agent를 조합하여 고유 식별자를 만듭니다.
+ */
 function getClientIdentifier(request: NextRequest): string {
   const forwardedFor = request.headers.get("x-forwarded-for");
   const realIp = request.headers.get("x-real-ip");
@@ -17,6 +36,10 @@ function getClientIdentifier(request: NextRequest): string {
   return `${ip}-${userAgent.slice(0, 50)}`;
 }
 
+/**
+ * Rate Limit 체크 함수
+ * 식별자별 요청 횟수를 확인하고 제한 여부를 반환합니다.
+ */
 function checkRateLimit(identifier: string): { allowed: boolean; remaining: number; resetTime: number } {
   const now = Date.now();
   const record = rateLimitStore.get(identifier);
@@ -61,6 +84,10 @@ function checkRateLimit(identifier: string): { allowed: boolean; remaining: numb
   };
 }
 
+/**
+ * Next.js 미들웨어 함수
+ * 모든 요청에 대해 Rate Limiting을 적용합니다.
+ */
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   

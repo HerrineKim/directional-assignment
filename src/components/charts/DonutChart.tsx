@@ -1,3 +1,9 @@
+/**
+ * 도넛 차트 컴포넌트
+ * Recharts 기반의 도넛(파이) 차트로, 그라데이션 효과와 커스텀 범례를 지원합니다.
+ * 항목별 색상 변경, 표시/숨김 기능, 반응형 스크롤을 제공합니다.
+ */
+
 "use client";
 
 import { useState, useMemo, useRef, useEffect } from "react";
@@ -13,6 +19,7 @@ import styles from "./DonutChart.module.css";
 import { cn } from "@/lib/utils";
 import { CHART_COLORS, CHART_ANIMATION_DURATION, CHART_ANIMATION_BEGIN } from "@/lib/constants";
 
+/** DonutChart 컴포넌트 props */
 interface DonutChartProps {
   data: Array<{ name: string; value: number }>;
   dataKey: string;

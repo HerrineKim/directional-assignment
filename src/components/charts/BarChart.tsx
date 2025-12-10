@@ -1,3 +1,9 @@
+/**
+ * 막대 차트 컴포넌트
+ * Recharts 기반의 막대 차트로, 그라데이션 효과와 커스텀 범례를 지원합니다.
+ * 항목별 색상 변경과 표시/숨김 기능을 제공합니다.
+ */
+
 "use client";
 
 import { useState, useMemo } from "react";
@@ -14,6 +20,7 @@ import {
 import { CustomLegend } from "./CustomLegend";
 import { CHART_COLORS, CHART_ANIMATION_DURATION, CHART_ANIMATION_BEGIN } from "@/lib/constants";
 
+/** BarChart 컴포넌트 props */
 interface BarChartProps {
   data: Array<{ name: string; value: number }>;
   dataKey: string;

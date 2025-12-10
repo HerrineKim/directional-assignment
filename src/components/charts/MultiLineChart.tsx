@@ -1,3 +1,9 @@
+/**
+ * 멀티 라인 차트 컴포넌트
+ * 여러 팀/그룹의 데이터를 좌/우 Y축으로 비교 표시하는 라인 차트입니다.
+ * 팀별 색상 변경, 라인 표시/숨김, 겹치는 데이터 포인트 감지 기능을 제공합니다.
+ */
+
 "use client";
 
 import { useState, useMemo, Fragment } from "react";
@@ -12,6 +18,7 @@ import {
 } from "recharts";
 import { CustomLegend } from "./CustomLegend";
 
+/** MultiLineChart 컴포넌트 props */
 interface MultiLineChartProps {
   data: Array<Record<string, string | number>>;
   xKey: string;

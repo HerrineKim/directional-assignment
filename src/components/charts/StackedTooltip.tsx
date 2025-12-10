@@ -1,5 +1,12 @@
+/**
+ * 누적 차트용 툴팁 컴포넌트
+ * 누적 영역/막대 차트에서 사용되는 커스텀 툴팁입니다.
+ * 백분율 또는 원본 값을 표시할 수 있습니다.
+ */
+
 "use client";
 
+/** StackedTooltip 컴포넌트 props */
 interface StackedTooltipProps {
   active?: boolean;
   payload?: Array<{

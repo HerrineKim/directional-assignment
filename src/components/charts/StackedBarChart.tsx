@@ -1,3 +1,9 @@
+/**
+ * 누적 막대 차트 컴포넌트
+ * 여러 데이터 시리즈를 누적 막대 형태로 표시합니다.
+ * 백분율 표시 및 원본 값 표시 모드를 지원합니다.
+ */
+
 "use client";
 
 import { useState, useMemo } from "react";
@@ -13,6 +19,7 @@ import {
 import { CustomLegend } from "./CustomLegend";
 import { StackedTooltip } from "./StackedTooltip";
 
+/** StackedBarChart 컴포넌트 props */
 interface StackedBarChartProps<T = Record<string, string | number>> {
   data: T[];
   xKey: string;

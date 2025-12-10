@@ -1,3 +1,9 @@
+/**
+ * 게시글 필터 컴포넌트
+ * 게시글 목록의 검색, 카테고리 필터링, 정렬 기능을 제공합니다.
+ * 검색은 제목과 본문에서 수행되며, 카테고리와 정렬 옵션을 선택할 수 있습니다.
+ */
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -14,6 +20,7 @@ import {
 import { POST_CATEGORIES, SORT_FIELDS, SORT_ORDERS } from "@/lib/constants";
 import type { Category, SortField, SortOrder } from "@/lib/types/post";
 
+/** PostFilters 컴포넌트 props */
 interface PostFiltersProps {
   search: string;
   category: Category | "ALL";

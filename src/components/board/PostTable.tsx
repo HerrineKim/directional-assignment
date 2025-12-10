@@ -1,3 +1,10 @@
+/**
+ * 게시글 테이블 컴포넌트
+ * 게시글 목록을 테이블 형태로 표시하며, 무한 스크롤을 지원합니다.
+ * 컬럼 가시성 설정, 컬럼 너비 조절, 게시글 상세 보기 기능을 포함합니다.
+ * 설정은 localStorage에 저장되어 새로고침 후에도 유지됩니다.
+ */
+
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
@@ -27,6 +34,7 @@ import styles from "./PostTable.module.css";
 import { cn } from "@/lib/utils";
 import { STORAGE_KEY_COLUMNS, STORAGE_KEY_WIDTHS } from "@/lib/constants";
 
+/** PostTable 컴포넌트 props */
 interface PostTableProps {
   posts: Post[];
   onEdit: (post: Post) => void;

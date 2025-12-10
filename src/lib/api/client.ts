@@ -1,7 +1,22 @@
+/**
+ * API 클라이언트
+ * Axios 기반의 HTTP 클라이언트로, 인증 토큰 관리와 Rate Limiting을 처리합니다.
+ *
+ * 주요 기능:
+ * - 자동 토큰 주입 (Authorization 헤더)
+ * - 401 응답 시 자동 로그아웃 및 리다이렉트
+ * - 429 응답 시 Rate Limit 에러 처리
+ * - 클라이언트 측 Rate Limiting (rateLimiter 연동)
+ */
+
 import axios, { AxiosInstance, AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import { API_BASE_URL } from "../constants";
 import { rateLimiter } from "../utils/rateLimiter";
 
+/**
+ * API 클라이언트 클래스
+ * 싱글톤 패턴으로 사용됩니다.
+ */
 class ApiClient {
   private client: AxiosInstance;
 

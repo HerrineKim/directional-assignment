@@ -1,7 +1,14 @@
+/**
+ * 무한 스크롤 게시글 목록 커스텀 훅
+ * 커서 기반 페이지네이션으로 게시글을 불러오고, 무한 스크롤을 지원합니다.
+ * 정렬, 필터링, 검색 기능과 함께 중복 게시글 방지 로직을 포함합니다.
+ */
+
 import { useState, useCallback } from "react";
 import { postsApi } from "../api/posts";
 import type { Post, PostListParams } from "../types/post";
 
+/** useInfinitePosts 훅 옵션 */
 interface UseInfinitePostsOptions {
   limit?: number;
   sort?: PostListParams["sort"];
@@ -10,6 +17,18 @@ interface UseInfinitePostsOptions {
   search?: string;
 }
 
+/**
+ * 무한 스크롤 게시글 목록을 관리하는 훅
+ * @param options - 페이지네이션 및 필터 옵션 (limit, sort, order, category, search)
+ * @returns posts (게시글 배열), isLoading, error, hasMore, loadMore (추가 로드), refresh (새로고침)
+ * @example
+ * const { posts, isLoading, hasMore, loadMore, refresh } = useInfinitePosts({
+ *   limit: 20,
+ *   sort: "createdAt",
+ *   order: "desc",
+ *   category: "FREE"
+ * });
+ */
 export function useInfinitePosts(options: UseInfinitePostsOptions = {}) {
   const [posts, setPosts] = useState<Post[]>([]);
   const [nextCursor, setNextCursor] = useState<string>();

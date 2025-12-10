@@ -1,3 +1,9 @@
+/**
+ * 커스텀 범례 컴포넌트
+ * 차트의 범례를 표시하며, 색상 변경과 항목 표시/숨김 기능을 제공합니다.
+ * 단일 항목 또는 팀별 그룹화된 항목을 지원합니다.
+ */
+
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -6,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import styles from "./CustomLegend.module.css";
 import { cn } from "@/lib/utils";
 
+/** 범례 아이템 타입 */
 interface LegendItem {
   name: string;
   color: string;

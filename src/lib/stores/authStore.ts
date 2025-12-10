@@ -1,3 +1,15 @@
+/**
+ * 인증 상태 관리 스토어
+ * Zustand를 사용한 전역 인증 상태 관리를 담당합니다.
+ * localStorage에 토큰과 사용자 정보를 저장하여 새로고침 시에도 로그인 상태를 유지합니다.
+ *
+ * 주요 기능:
+ * - 로그인/로그아웃 처리
+ * - 토큰 관리 및 API 클라이언트 동기화
+ * - 에러 상태 관리
+ * - hydration 상태 추적
+ */
+
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { AxiosError } from "axios";
@@ -5,6 +17,7 @@ import { apiClient } from "../api/client";
 import { authApi } from "../api/auth";
 import type { LoginRequest, LoginResponse } from "../api/auth";
 
+/** 인증 스토어 상태 및 액션 타입 */
 interface AuthState {
   token: string | null;
   user: LoginResponse["user"] | null;
