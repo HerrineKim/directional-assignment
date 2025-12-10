@@ -21,7 +21,34 @@ interface BarChartProps {
   colors?: string[];
 }
 
-const DEFAULT_COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff7300", "#00ff00"];
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: Array<{ name?: string; value?: number; payload?: any }>;
+  label?: string;
+}
+
+const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
+  if (!active || !payload || !payload.length) return null;
+
+  return (
+    <div className="bg-background border rounded-lg p-3 shadow-lg">
+      <p className="text-sm font-medium">
+        {label}: {payload[0]?.value}
+      </p>
+    </div>
+  );
+};
+
+const DEFAULT_COLORS = [
+  "#FF6B9D", // 핑크
+  "#C44569", // 라즈베리
+  "#FFA07A", // 연어
+  "#FFD93D", // 밝은 노랑
+  "#6BCB77", // 민트 그린
+  "#4D96FF", // 밝은 파랑
+  "#9D84B7", // 라벤더
+  "#FDA085", // 복숭아
+];
 
 export function BarChart({
   data,
@@ -74,18 +101,41 @@ export function BarChart({
   return (
     <div className="space-y-4">
       {title && <h3 className="text-lg font-semibold">{title}</h3>}
-      <div className="h-[300px] sm:h-[400px]">
+      <div className="h-[300px] sm:h-[400px] p-4 bg-gradient-to-br from-background to-muted/20 rounded-xl shadow-sm border">
         <ResponsiveContainer width="100%" height="100%">
           <RechartsBarChart data={filteredData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey={nameKey} />
-            <YAxis />
-            <Tooltip />
-            <Bar dataKey={dataKey}>
+            <defs>
               {filteredData.map((entry, index) => {
                 const name = entry[nameKey as keyof typeof entry] as string;
                 const color = itemColors[name] || colors[data.findIndex((d) => d[nameKey as keyof typeof d] === name) % colors.length];
-                return <Cell key={`cell-${index}`} fill={color} />;
+                return (
+                  <linearGradient key={`gradient-${index}`} id={`gradient-${name}`} x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={color} stopOpacity={0.8} />
+                    <stop offset="100%" stopColor={color} stopOpacity={0.3} />
+                  </linearGradient>
+                );
+              })}
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" stroke="currentColor" opacity={0.1} />
+            <XAxis
+              dataKey={nameKey}
+              tick={{ fill: 'currentColor', fontSize: 12 }}
+              tickLine={{ stroke: 'currentColor', opacity: 0.2 }}
+            />
+            <YAxis
+              tick={{ fill: 'currentColor', fontSize: 12 }}
+              tickLine={{ stroke: 'currentColor', opacity: 0.2 }}
+            />
+            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'currentColor', opacity: 0.05 }} />
+            <Bar
+              dataKey={dataKey}
+              radius={[8, 8, 0, 0]}
+              animationDuration={800}
+              animationBegin={0}
+            >
+              {filteredData.map((entry, index) => {
+                const name = entry[nameKey as keyof typeof entry] as string;
+                return <Cell key={`cell-${index}`} fill={`url(#gradient-${name})`} />;
               })}
             </Bar>
           </RechartsBarChart>

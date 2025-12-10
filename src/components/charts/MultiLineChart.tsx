@@ -200,10 +200,10 @@ export function MultiLineChart({
   return (
     <div className="space-y-4">
       {title && <h3 className="text-lg font-semibold">{title}</h3>}
-      <div className="h-[350px] sm:h-[500px] pb-8">
+      <div className="h-[450px] sm:h-[600px] pb-8 p-4 bg-gradient-to-br from-background to-muted/20 rounded-xl shadow-sm border">
         <ResponsiveContainer width="100%" height="100%">
           <RechartsLineChart data={data} margin={{ bottom: 30 }}>
-            <CartesianGrid strokeDasharray="3 3" />
+            <CartesianGrid strokeDasharray="3 3" stroke="currentColor" opacity={0.1} />
             <XAxis
               dataKey={xKey}
               label={{
@@ -211,15 +211,21 @@ export function MultiLineChart({
                 position: "bottom",
                 offset: 10,
               }}
+              tick={{ fill: 'currentColor', fontSize: 12 }}
+              tickLine={{ stroke: 'currentColor', opacity: 0.2 }}
             />
             <YAxis
               yAxisId="left"
               label={{ value: leftYAxisLabel, angle: -90, position: "insideLeft" }}
+              tick={{ fill: 'currentColor', fontSize: 12 }}
+              tickLine={{ stroke: 'currentColor', opacity: 0.2 }}
             />
             <YAxis
               yAxisId="right"
               orientation="right"
               label={{ value: rightYAxisLabel, angle: 90, position: "insideRight" }}
+              tick={{ fill: 'currentColor', fontSize: 12 }}
+              tickLine={{ stroke: 'currentColor', opacity: 0.2 }}
             />
             <Tooltip content={<CustomTooltip hoveredTeams={hoveredTeams} />} cursor={false} />
             {teams.map((team) => {
@@ -233,7 +239,9 @@ export function MultiLineChart({
                     type="monotone"
                     dataKey={`${team.name}_${team.leftKey}`}
                     stroke={color}
-                    strokeWidth={2}
+                    strokeWidth={3}
+                    animationDuration={800}
+                    animationBegin={0}
                     dot={(props: { cx?: number; cy?: number; payload?: any }) => {
                       const { cx, cy, payload } = props;
                       if (cx === undefined || cy === undefined) return null;
@@ -283,7 +291,9 @@ export function MultiLineChart({
                     dataKey={`${team.name}_${team.rightKey}`}
                     stroke={color}
                     strokeDasharray="5 5"
-                    strokeWidth={2}
+                    strokeWidth={3}
+                    animationDuration={800}
+                    animationBegin={0}
                     dot={(props: { cx?: number; cy?: number; payload?: any }) => {
                       const { cx, cy, payload } = props;
                       if (cx === undefined || cy === undefined) return null;

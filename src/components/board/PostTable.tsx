@@ -11,6 +11,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -28,11 +35,10 @@ interface PostTableProps {
   isLoading: boolean;
 }
 
-const STORAGE_KEY_COLUMNS = "post_table_columns";
-const STORAGE_KEY_WIDTHS = "post_table_widths";
+const STORAGE_KEY_COLUMNS = "post_table_columns_v2";
+const STORAGE_KEY_WIDTHS = "post_table_widths_v2";
 
 const defaultColumns: ColumnConfig[] = [
-  { id: "id", label: "ID", visible: true },
   { id: "title", label: "제목", visible: true },
   { id: "body", label: "본문", visible: true },
   { id: "category", label: "카테고리", visible: true },
@@ -41,7 +47,6 @@ const defaultColumns: ColumnConfig[] = [
 ];
 
 const defaultWidths: Record<string, number> = {
-  id: 120,
   title: 200,
   body: 300,
   category: 100,
@@ -50,7 +55,6 @@ const defaultWidths: Record<string, number> = {
 };
 
 const minWidths: Record<string, number> = {
-  id: 60,
   title: 80,
   body: 100,
   category: 70,
@@ -81,6 +85,7 @@ export function PostTable({
   const [resizingColumn, setResizingColumn] = useState<string | null>(null);
   const [resizeStartX, setResizeStartX] = useState(0);
   const [resizeStartWidth, setResizeStartWidth] = useState(0);
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const tableRef = useRef<HTMLTableElement>(null);
 
   const { ref: loadMoreRef, inView } = useInView({
@@ -269,20 +274,20 @@ export function PostTable({
                         }
                       >
                         <div className={cn("overflow-hidden w-full", !needsWrap && "truncate")}>
-                          {column.id === "id" && (
-                            <span className="block truncate whitespace-nowrap" title={post.id}>
-                              {post.id}
-                            </span>
-                          )}
                           {column.id === "title" && (
-                            <span className="block truncate whitespace-nowrap" title={post.title}>
+                            <span
+                              className="block truncate whitespace-nowrap cursor-pointer hover:text-primary hover:underline"
+                              title="클릭하여 전체 내용 보기"
+                              onClick={() => setSelectedPost(post)}
+                            >
                               {post.title}
                             </span>
                           )}
                           {column.id === "body" && (
-                            <span 
-                              className={styles.bodyText}
-                              title={post.body}
+                            <span
+                              className={cn(styles.bodyText, "cursor-pointer hover:text-primary")}
+                              title="클릭하여 전체 내용 보기"
+                              onClick={() => setSelectedPost(post)}
                             >
                               {post.body}
                             </span>
@@ -337,6 +342,63 @@ export function PostTable({
 
 
       {hasMore && <div ref={loadMoreRef} className="h-10" />}
+
+      {/* Post Detail Dialog */}
+      <Dialog open={!!selectedPost} onOpenChange={(open) => !open && setSelectedPost(null)}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          {selectedPost && (
+            <>
+              <DialogHeader>
+                <DialogTitle>{selectedPost.title}</DialogTitle>
+                <DialogDescription>
+                  {formatDate(selectedPost.createdAt)}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 mt-4">
+                <div>
+                  <h4 className="text-sm font-semibold mb-2">카테고리</h4>
+                  <Badge variant="outline">{getCategoryLabel(selectedPost.category)}</Badge>
+                </div>
+                {selectedPost.tags.length > 0 && (
+                  <div>
+                    <h4 className="text-sm font-semibold mb-2">태그</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedPost.tags.map((tag) => (
+                        <Badge key={tag} variant="secondary">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <div>
+                  <h4 className="text-sm font-semibold mb-2">본문</h4>
+                  <p className="text-sm whitespace-pre-wrap">{selectedPost.body}</p>
+                </div>
+                <div className="flex gap-2 justify-end pt-4 border-t">
+                  <Button variant="outline" onClick={() => setSelectedPost(null)}>
+                    닫기
+                  </Button>
+                  <Button variant="outline" onClick={() => {
+                    onEdit(selectedPost);
+                    setSelectedPost(null);
+                  }}>
+                    <Edit className="h-4 w-4 mr-2" />
+                    수정
+                  </Button>
+                  <Button variant="destructive" onClick={() => {
+                    onDelete(selectedPost.id);
+                    setSelectedPost(null);
+                  }}>
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    삭제
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

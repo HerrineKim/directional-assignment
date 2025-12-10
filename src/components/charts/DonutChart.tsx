@@ -20,7 +20,16 @@ interface DonutChartProps {
   colors?: string[];
 }
 
-const COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff7300", "#00ff00"];
+const COLORS = [
+  "#FF6B9D", // 핑크
+  "#C44569", // 라즈베리
+  "#FFA07A", // 연어
+  "#FFD93D", // 밝은 노랑
+  "#6BCB77", // 민트 그린
+  "#4D96FF", // 밝은 파랑
+  "#9D84B7", // 라벤더
+  "#FDA085", // 복숭아
+];
 
 export function DonutChart({
   data,
@@ -126,12 +135,25 @@ export function DonutChart({
         ref={containerRef}
         className={cn(
           styles.container,
-          needsScroll ? styles.scrollContainer : styles.noScrollContainer
+          needsScroll ? styles.scrollContainer : styles.noScrollContainer,
+          "bg-gradient-to-br from-background to-muted/20 rounded-xl shadow-sm border p-4"
         )}
       >
         <div ref={contentRef} className={styles.content}>
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
+              <defs>
+                {filteredData.map((entry, index) => {
+                  const name = entry[nameKey as keyof typeof entry] as string;
+                  const color = itemColors[name] || colors[data.findIndex((d) => d[nameKey as keyof typeof d] === name) % colors.length];
+                  return (
+                    <linearGradient key={`gradient-${index}`} id={`donut-gradient-${name}`} x1="0" y1="0" x2="1" y2="1">
+                      <stop offset="0%" stopColor={color} stopOpacity={0.9} />
+                      <stop offset="100%" stopColor={color} stopOpacity={0.6} />
+                    </linearGradient>
+                  );
+                })}
+              </defs>
               <Pie
                 data={filteredData}
                 cx="50%"
@@ -143,11 +165,12 @@ export function DonutChart({
                 fill="#8884d8"
                 dataKey={dataKey}
                 nameKey={nameKey}
+                animationDuration={800}
+                animationBegin={0}
               >
                 {filteredData.map((entry, index) => {
                   const name = entry[nameKey as keyof typeof entry] as string;
-                  const color = itemColors[name] || colors[data.findIndex((d) => d[nameKey as keyof typeof d] === name) % colors.length];
-                  return <Cell key={`cell-${index}`} fill={color} />;
+                  return <Cell key={`cell-${index}`} fill={`url(#donut-gradient-${name})`} />;
                 })}
               </Pie>
               <Tooltip />

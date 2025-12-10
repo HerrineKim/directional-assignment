@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
+import { Menu, X, FileText, BarChart3 } from "lucide-react";
 import { useAuthStore } from "@/lib/stores/authStore";
 import { Button } from "@/components/ui/button";
 import {
@@ -55,16 +55,18 @@ export default function DashboardLayout({
     <>
       <Link
         href="/board"
-        className="text-base font-medium hover:text-primary transition-colors py-2 px-3 rounded-md hover:bg-accent"
+        className="text-base font-medium hover:text-primary transition-colors py-2 px-3 rounded-md hover:bg-accent flex items-center gap-2"
         onClick={() => setIsMobileMenuOpen(false)}
       >
+        <FileText className="h-4 w-4" />
         게시판
       </Link>
       <Link
         href="/charts"
-        className="text-base font-medium hover:text-primary transition-colors py-2 px-3 rounded-md hover:bg-accent"
+        className="text-base font-medium hover:text-primary transition-colors py-2 px-3 rounded-md hover:bg-accent flex items-center gap-2"
         onClick={() => setIsMobileMenuOpen(false)}
       >
+        <BarChart3 className="h-4 w-4" />
         데이터 시각화
       </Link>
     </>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { Pencil, FileText } from "lucide-react";
 import { useDebounce } from "@/lib/hooks/useDebounce";
 import { Button } from "@/components/ui/button";
 import { PostForm } from "@/components/board/PostForm";
@@ -69,7 +70,6 @@ export default function BoardPage() {
   };
 
   const handleClearFilters = () => {
-    setSearch("");
     setCategory("ALL");
     setSort("createdAt");
     setOrder("desc");
@@ -78,7 +78,10 @@ export default function BoardPage() {
   return (
     <div className="space-y-4 sm:space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <h1 className="text-2xl sm:text-3xl font-bold">게시판</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2">
+          <FileText className="h-7 w-7 sm:h-8 sm:w-8" />
+          게시판
+        </h1>
         <Button
           onClick={() => {
             setEditingPost(null);
@@ -86,6 +89,7 @@ export default function BoardPage() {
           }}
           className="w-full sm:w-auto"
         >
+          <Pencil className="h-4 w-4" />
           게시글 작성
         </Button>
       </div>

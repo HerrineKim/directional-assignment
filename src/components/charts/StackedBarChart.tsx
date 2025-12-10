@@ -70,24 +70,31 @@ export function StackedBarChart<T extends Record<string, string | number>>({
   return (
     <div className="space-y-4">
       {title && <h3 className="text-lg font-semibold">{title}</h3>}
-      <div className="h-[300px] sm:h-[400px]">
+      <div className="h-[300px] sm:h-[400px] p-4 bg-gradient-to-br from-background to-muted/20 rounded-xl shadow-sm border">
         <ResponsiveContainer width="100%" height="100%">
           <RechartsBarChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey={xKey} />
-            <YAxis 
+            <CartesianGrid strokeDasharray="3 3" stroke="currentColor" opacity={0.1} />
+            <XAxis
+              dataKey={xKey}
+              tick={{ fill: 'currentColor', fontSize: 12 }}
+              tickLine={{ stroke: 'currentColor', opacity: 0.2 }}
+            />
+            <YAxis
               label={{ value: "백분율 (%)", angle: -90, position: "insideLeft" }}
               domain={[0, 100]}
+              tick={{ fill: 'currentColor', fontSize: 12 }}
+              tickLine={{ stroke: 'currentColor', opacity: 0.2 }}
             />
-            <Tooltip 
+            <Tooltip
               content={
-                <StackedTooltip 
+                <StackedTooltip
                   showOriginal={showOriginalValues}
                   originalKeys={originalKeyMap}
                 />
               }
+              cursor={{ fill: 'currentColor', opacity: 0.05 }}
             />
-            {visibleStackKeys.map(({ key, name }) => (
+            {visibleStackKeys.map(({ key, name }, index) => (
               <Bar
                 key={key}
                 dataKey={key}
@@ -95,6 +102,9 @@ export function StackedBarChart<T extends Record<string, string | number>>({
                 fill={itemColors[key] || stackKeys.find((sk) => sk.key === key)?.color || "#8884d8"}
                 name={name}
                 hide={hiddenItems.has(name)}
+                radius={index === visibleStackKeys.length - 1 ? [8, 8, 0, 0] : [0, 0, 0, 0]}
+                animationDuration={800}
+                animationBegin={0}
               />
             ))}
           </RechartsBarChart>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import { BarChart3 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart } from "@/components/charts/BarChart";
 import { DonutChart } from "@/components/charts/DonutChart";
@@ -18,7 +19,16 @@ import type {
   SnackImpactResponse,
 } from "@/lib/types/chart";
 
-const COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff7300", "#00ff00", "#0088fe"];
+const COLORS = [
+  "#FF6B9D", // 핑크
+  "#C44569", // 라즈베리
+  "#FFA07A", // 연어
+  "#FFD93D", // 밝은 노랑
+  "#6BCB77", // 민트 그린
+  "#4D96FF", // 밝은 파랑
+  "#9D84B7", // 라벤더
+  "#FDA085", // 복숭아
+];
 
 export default function ChartsPage() {
   const [coffeeBrands, setCoffeeBrands] = useState<TopCoffeeBrandsResponse | null>(null);
@@ -222,7 +232,10 @@ export default function ChartsPage() {
 
   return (
     <div className="space-y-6 sm:space-y-8">
-      <h1 className="text-2xl sm:text-3xl font-bold">데이터 시각화</h1>
+      <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2">
+        <BarChart3 className="h-7 w-7 sm:h-8 sm:w-8" />
+        데이터 시각화
+      </h1>
 
       {/* Coffee Brands */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
