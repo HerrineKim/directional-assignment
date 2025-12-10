@@ -36,6 +36,7 @@ export function useInfinitePosts(options: UseInfinitePostsOptions = {}) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [hasMore, setHasMore] = useState(true);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const loadPosts = useCallback(
     async (cursor?: string, isNext = true) => {
@@ -78,9 +79,11 @@ export function useInfinitePosts(options: UseInfinitePostsOptions = {}) {
         setNextCursor(response.nextCursor);
         setPrevCursor(response.prevCursor);
         setHasMore(!!response.nextCursor);
+        setIsInitialized(true);
       } catch (err) {
         setError(err instanceof Error ? err : new Error("게시글 로드에 실패했습니다"));
         setHasMore(false);
+        setIsInitialized(true);
       } finally {
         setIsLoading(false);
       }
@@ -99,6 +102,7 @@ export function useInfinitePosts(options: UseInfinitePostsOptions = {}) {
     setNextCursor(undefined);
     setPrevCursor(undefined);
     setHasMore(true);
+    setIsInitialized(false);
     loadPosts();
   }, [loadPosts]);
 
@@ -107,6 +111,7 @@ export function useInfinitePosts(options: UseInfinitePostsOptions = {}) {
     isLoading,
     error,
     hasMore,
+    isInitialized,
     loadMore,
     refresh,
   };

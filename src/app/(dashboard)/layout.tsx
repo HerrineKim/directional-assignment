@@ -30,17 +30,8 @@ export default function DashboardLayout({
     }
   }, [setHasHydrated]);
 
-  useEffect(() => {
-    if (!hasHydrated) {
-      return;
-    }
-
-    if (!isAuthenticated) {
-      router.push("/login");
-    }
-  }, [isAuthenticated, hasHydrated, router]);
-
-  if (!hasHydrated || !isAuthenticated) {
+  // 로딩 중에만 로딩 화면 표시 (로그인 체크 제거)
+  if (!hasHydrated) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <p>로딩 중...</p>
@@ -91,19 +82,32 @@ export default function DashboardLayout({
             </SheetContent>
           </Sheet>
 
-          {/* User Info & Logout */}
+          {/* User Info & Auth Button */}
           <div className="flex items-center gap-2 sm:gap-4">
-            <span className="hidden sm:inline-block text-sm text-muted-foreground truncate max-w-[150px]">
-              {user?.email}
-            </span>
-            <Button
-              variant="outline"
-              onClick={logout}
-              size="sm"
-              className="text-xs sm:text-sm"
-            >
-              로그아웃
-            </Button>
+            {isAuthenticated ? (
+              <>
+                <span className="hidden sm:inline-block text-sm text-muted-foreground truncate max-w-[150px]">
+                  {user?.email}
+                </span>
+                <Button
+                  variant="outline"
+                  onClick={logout}
+                  size="sm"
+                  className="text-xs sm:text-sm"
+                >
+                  로그아웃
+                </Button>
+              </>
+            ) : (
+              <Button
+                variant="default"
+                onClick={() => router.push("/login")}
+                size="sm"
+                className="text-xs sm:text-sm"
+              >
+                로그인
+              </Button>
+            )}
           </div>
         </div>
       </header>

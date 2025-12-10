@@ -82,5 +82,17 @@ export const postsApi = {
     }>("/posts");
     return response.data;
   },
+
+  /**
+   * Mock 게시글 목록을 조회합니다.
+   * @param count - 반환할 항목 수 (기본 300, 최대 500)
+   * @returns Mock 게시글 목록
+   */
+  getMockPosts: async (count: number = 300): Promise<{ items: Post[]; count: number }> => {
+    const response = await apiClient.get<{ items: Post[]; count: number }>("/mock/posts", {
+      params: { count },
+    });
+    return response.data;
+  },
 };
 

@@ -103,9 +103,9 @@ export function PostFilters({
         </form>
       </div>
 
-      <div className="flex flex-col sm:flex-row flex-wrap gap-4 items-end">
-        <div>
-          <label className="text-sm font-medium mb-2 block">카테고리</label>
+      <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4 sm:items-start">
+        <div className="flex items-center gap-3 sm:flex-col sm:items-start">
+          <label className="text-sm font-medium sm:mb-2 whitespace-nowrap">카테고리</label>
           <Select value={category} onValueChange={(value) => onCategoryChange(value as Category | "ALL")}>
             <SelectTrigger className="w-full sm:w-[140px]">
               <SelectValue placeholder="카테고리" />
@@ -123,9 +123,9 @@ export function PostFilters({
           </Select>
         </div>
 
-        <div>
-          <label className="text-sm font-medium mb-2 block">정렬</label>
-          <div className="flex gap-2">
+        <div className="flex items-center gap-3 sm:flex-col sm:items-start">
+          <label className="text-sm font-medium sm:mb-2 whitespace-nowrap">정렬</label>
+          <div className="flex gap-2 flex-1 sm:flex-none">
             <Select value={sort} onValueChange={(value) => onSortChange(value as SortField)}>
               <SelectTrigger className="w-full sm:w-[140px]">
                 <SelectValue placeholder="정렬 기준" />

@@ -23,6 +23,11 @@ export interface Post {
   createdAt: string;
 }
 
+/** UI용 게시글 타입 (소유권 정보 포함) */
+export interface PostWithOwnership extends Post {
+  isMine: boolean;
+}
+
 /** 게시글 생성 요청 DTO */
 export interface PostCreateRequest {
   title: string;

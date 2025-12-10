@@ -29,15 +29,15 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ColumnVisibility, type ColumnConfig } from "./ColumnVisibility";
-import type { Post } from "@/lib/types/post";
+import type { PostWithOwnership } from "@/lib/types/post";
 import styles from "./PostTable.module.css";
 import { cn } from "@/lib/utils";
 import { STORAGE_KEY_COLUMNS, STORAGE_KEY_WIDTHS } from "@/lib/constants";
 
 /** PostTable 컴포넌트 props */
 interface PostTableProps {
-  posts: Post[];
-  onEdit: (post: Post) => void;
+  posts: PostWithOwnership[];
+  onEdit: (post: PostWithOwnership) => void;
   onDelete: (postId: string) => void;
   onLoadMore: () => void;
   hasMore: boolean;
@@ -91,7 +91,7 @@ export function PostTable({
   const [resizingColumn, setResizingColumn] = useState<string | null>(null);
   const [resizeStartX, setResizeStartX] = useState(0);
   const [resizeStartWidth, setResizeStartWidth] = useState(0);
-  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [selectedPost, setSelectedPost] = useState<PostWithOwnership | null>(null);
   const tableRef = useRef<HTMLTableElement>(null);
 
   const { ref: loadMoreRef, inView } = useInView({
@@ -108,10 +108,10 @@ export function PostTable({
   }, [columnWidths]);
 
   useEffect(() => {
-    if (inView && hasMore && !isLoading) {
+    if (inView && hasMore && !isLoading && posts.length > 0) {
       onLoadMore();
     }
-  }, [inView, hasMore, isLoading, onLoadMore]);
+  }, [inView, hasMore, isLoading, onLoadMore, posts.length]);
 
   const handleMouseDown = (columnId: string, e: React.MouseEvent) => {
     e.preventDefault();
@@ -219,7 +219,7 @@ export function PostTable({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {isLoading ? (
+            {isLoading && posts.length === 0 ? (
               Array.from({ length: 5 }).map((_, i) => (
                 <TableRow key={i}>
                   {visibleColumns.map((column) => {
@@ -255,9 +255,9 @@ export function PostTable({
                 </TableCell>
               </TableRow>
             ) : (
-              posts.map((post) => (
+              posts.map((post, index) => (
                 <TableRow
-                  key={post.id}
+                  key={`${post.id}-${index}`}
                   className="cursor-pointer hover:bg-muted/50"
                   onClick={() => setSelectedPost(post)}
                 >
@@ -281,9 +281,16 @@ export function PostTable({
                       >
                         <div className={cn("overflow-hidden w-full", !needsWrap && "truncate")}>
                           {column.id === "title" && (
-                            <span className="block truncate whitespace-nowrap">
-                              {post.title}
-                            </span>
+                            <div className="flex items-center gap-2">
+                              <span className="block truncate whitespace-nowrap flex-1">
+                                {post.title}
+                              </span>
+                              {post.isMine && (
+                                <Badge variant="secondary" className="text-xs whitespace-nowrap shrink-0">
+                                  내 글
+                                </Badge>
+                              )}
+                            </div>
                           )}
                           {column.id === "body" && (
                             <span className={styles.bodyText}>
@@ -314,28 +321,34 @@ export function PostTable({
                     );
                   })}
                   <TableCell>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onEdit(post);
-                        }}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onDelete(post.id);
-                        }}
-                      >
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
-                    </div>
+                    {post.isMine ? (
+                      <div className="flex gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onEdit(post);
+                          }}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onDelete(post.id);
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="flex gap-2">
+                        <span className="text-xs text-muted-foreground">-</span>
+                      </div>
+                    )}
                   </TableCell>
                 </TableRow>
               ))
@@ -344,15 +357,32 @@ export function PostTable({
         </Table>
       </div>
 
+      {hasMore && !isLoading && posts.length > 0 && (
+        <div ref={loadMoreRef} className="h-10" />
+      )}
 
-      {hasMore && <div ref={loadMoreRef} className="h-10" />}
+      {hasMore && isLoading && posts.length > 0 && (
+        <div className="flex justify-center py-4">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+            <span className="text-sm">더 불러오는 중...</span>
+          </div>
+        </div>
+      )}
 
       <Dialog open={!!selectedPost} onOpenChange={(open) => !open && setSelectedPost(null)}>
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
           {selectedPost && (
             <>
               <DialogHeader>
-                <DialogTitle>{selectedPost.title}</DialogTitle>
+                <DialogTitle className="flex flex-wrap items-center gap-2 pr-10">
+                  <span className="flex-1 min-w-0 wrap-break-word">{selectedPost.title}</span>
+                  {selectedPost.isMine && (
+                    <Badge variant="secondary" className="text-xs whitespace-nowrap shrink-0">
+                      내 글
+                    </Badge>
+                  )}
+                </DialogTitle>
                 <DialogDescription>
                   {formatDate(selectedPost.createdAt)}
                 </DialogDescription>
@@ -382,20 +412,24 @@ export function PostTable({
                   <Button variant="outline" onClick={() => setSelectedPost(null)}>
                     닫기
                   </Button>
-                  <Button variant="outline" onClick={() => {
-                    onEdit(selectedPost);
-                    setSelectedPost(null);
-                  }}>
-                    <Edit className="h-4 w-4 mr-2" />
-                    수정
-                  </Button>
-                  <Button variant="destructive" onClick={() => {
-                    onDelete(selectedPost.id);
-                    setSelectedPost(null);
-                  }}>
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    삭제
-                  </Button>
+                  {selectedPost.isMine && (
+                    <>
+                      <Button variant="outline" onClick={() => {
+                        onEdit(selectedPost);
+                        setSelectedPost(null);
+                      }}>
+                        <Edit className="h-4 w-4 mr-2" />
+                        수정
+                      </Button>
+                      <Button variant="destructive" onClick={() => {
+                        onDelete(selectedPost.id);
+                        setSelectedPost(null);
+                      }}>
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        삭제
+                      </Button>
+                    </>
+                  )}
                 </div>
               </div>
             </>
