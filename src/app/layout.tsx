@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "게시판 및 데이터 시각화",
+  title: "Directional",
   description: "게시판 관리 및 데이터 시각화 대시보드",
 };
 
